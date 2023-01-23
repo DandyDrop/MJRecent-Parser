@@ -15,6 +15,8 @@ results_main = []
 def handle_request():
     if request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+        bot.send_message(chat_id="652015662", text=str(update))
+        bot.send_message(chat_id="652015662", text = str(request))
         bot.process_new_updates([update])
         return ""
     else:
