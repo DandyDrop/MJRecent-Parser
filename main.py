@@ -26,7 +26,10 @@ def handle_request():
     else:
         return ""
 
-def main():
+@bot.message_handler(commands=["main"])
+def main(m):
+    bot.send_message(chat_id="652015662", text=str(message))
+    bot.send_message(chat_id="652015662", text="Executed the main func")
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -47,14 +50,6 @@ def main():
     bot.send_photo(chat_id="652015662", photo=results_main[0]['link'], caption=results_main[0]['prompt'])
 
 if __name__ == '__main__':
-    server = Process(target=app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000))))
-    while True:
-        bot.send_message(chat_id="652015662", text="Calling main...")
-        main()
-        server.start()
-        time.sleep(10000)
-        server.terminate()
-        server.join()
-
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
         
