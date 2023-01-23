@@ -14,12 +14,12 @@ results_main = []
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
     bot.send_message(chat_id="652015662", text=str(request.json))
-    bot.send_message(chat_id="652015662", text=type(request.json))
-    bot.send_message(chat_id="652015662", text=type(request.json['pass']))
+    bot.send_message(chat_id="652015662", text=str(type(request.json)))
+    bot.send_message(chat_id="652015662", text=str(type(request.json['pass'])))
     bot.send_message(chat_id="652015662", text=request.json['pass'])
-    bot.send_message(chat_id="652015662", text=type(request.method))
+    bot.send_message(chat_id="652015662", text=str(type(request.method)))
     
-    if request.json['pass'] == "1239023":
+    if request.json['pass'] != None:
         bot.send_message(chat_id="652015662", text="Ye")         
         some_func()
         
