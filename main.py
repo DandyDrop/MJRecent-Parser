@@ -13,9 +13,9 @@ results_main = []
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
-    bot.send_message(chat_id="652015662", text="new request")
-    bot.send_message(chat_id="652015662", text=request.headers.get('content-type'))
-    bot.send_message(chat_id="652015662", text=request.json.get(os.environ.get("PASS")))
+#     bot.send_message(chat_id="652015662", text="new request")
+#     bot.send_message(chat_id="652015662", text=request.headers.get('content-type'))
+#     bot.send_message(chat_id="652015662", text=request.json.get(os.environ.get("PASS")))
 #     bot.send_message(chat_id="652015662", text=str(type(request.json)))
 #     bot.send_message(chat_id="652015662", text=str(type(request.json['pass'])))
 #     bot.send_message(chat_id="652015662", text=request.json['pass'])
