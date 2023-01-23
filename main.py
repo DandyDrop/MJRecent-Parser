@@ -13,7 +13,7 @@ results_main = []
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
-    bot.send_message(chat_id="652015662", text=str(request.json))
+    bot.send_message(chat_id="652015662", text=request.headers.get('content-type'))
 #     bot.send_message(chat_id="652015662", text=str(type(request.json)))
 #     bot.send_message(chat_id="652015662", text=str(type(request.json['pass'])))
 #     bot.send_message(chat_id="652015662", text=request.json['pass'])
@@ -25,8 +25,7 @@ def handle_request():
     
     elif request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
-        bot.send_message(chat_id="652015662", text=str(update))
-        bot.send_message(chat_id="652015662", text = str(request))
+        bot.send_message(chat_id="652015662", text=str(request))
         bot.process_new_updates([update])
         return ""
     else:
