@@ -6,7 +6,6 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
-from multiprocessing import Process
 
 app = Flask(__name__)
 bot = telebot.TeleBot("5809276134:AAGuKn5wiaMqQwB_7_yce0_mHLufcdvn4eA")
@@ -49,7 +48,6 @@ def main(m):
 
     bot.send_photo(chat_id="652015662", photo=results_main[0]['link'], caption=results_main[0]['prompt'])
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
         
