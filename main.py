@@ -19,6 +19,8 @@ def handle_request():
         bot.send_message(chat_id="652015662", text = str(request))
         bot.process_new_updates([update])
         return ""
+    elif request.method == "POST" and request.json['pass'] == "1239023":
+        some_func()
     else:
         flask.abort(403)
 
@@ -50,6 +52,9 @@ def main(m):
 
     bot.send_photo(chat_id="652015662", photo=results_main[0]['link'], caption=results_main[0]['prompt'])
 
+def some_func():
+    bot.send_message(chat_id="652015662", text="Hello from some trash func ;( ")
+    
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
         
