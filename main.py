@@ -13,14 +13,6 @@ results_main = []
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
-#     bot.send_message(chat_id="652015662", text="new request")
-#     bot.send_message(chat_id="652015662", text=request.headers.get('content-type'))
-#     bot.send_message(chat_id="652015662", text=request.json.get(os.environ.get("PASS")))
-#     bot.send_message(chat_id="652015662", text=str(type(request.json)))
-#     bot.send_message(chat_id="652015662", text=str(type(request.json['pass'])))
-#     bot.send_message(chat_id="652015662", text=request.json['pass'])
-#     bot.send_message(chat_id="652015662", text=str(type(request.method)))
-    
     if request.json.get(os.environ.get("PASS")) != None:
         bot.send_message(chat_id="652015662", text="Ye")         
         some_func()
@@ -38,8 +30,8 @@ def handle_request():
     else:
         return ""
 
-@bot.message_handler(commands=["main"])
-def main(m):
+@bot.message_handler(commands=["new"])
+def new(m):
     bot.send_message(chat_id="652015662", text="Hello from main")
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
@@ -61,7 +53,25 @@ def main(m):
     bot.send_photo(chat_id="652015662", photo=results_main[0]['link'], caption=results_main[0]['prompt'])
 
 def some_func():
-    bot.send_message(chat_id="652015662", text="Hello from some trash func ;( ")
+    bot.send_message(chat_id="652015662", text="Hello from some_func")
+    results_main.clear()
+    response = requests.get("https://www.midjourney.com/showcase/recent/")
+    soup = BeautifulSoup(response.text, 'html.parser')
+    scripts = soup.find_all("script")
+    for script in scripts:
+        try:
+            bot.send_message(chat_id="652015662", text=f"Sending {script['id'][7:-2].lower()}...")
+            data = json.loads(script.text)
+            jobs = data['props']['pageProps']['jobs']
+            for job in jobs:
+                results_main.append({"link": job['image_paths'][0],
+                                     "prompt": job['full_command']
+                                     })
+
+        except KeyError:
+            continue
+
+    bot.send_photo(chat_id="652015662", photo=results_main[0]['link'], caption=results_main[0]['prompt'])
     
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
