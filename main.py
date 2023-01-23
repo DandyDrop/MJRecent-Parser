@@ -6,6 +6,7 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
+from multiprocessing import Process
 
 app = Flask(__name__)
 bot = telebot.TeleBot("5809276134:AAGuKn5wiaMqQwB_7_yce0_mHLufcdvn4eA")
@@ -30,8 +31,6 @@ def main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
-    print(str(soup) + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-    print("scripts:\n" + str(scripts) + "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
     for script in scripts:
         try:
             bot.send_message(chat_id="652015662", text=f"Sending {script['id'][7:-2].lower()}...")
@@ -48,9 +47,14 @@ def main():
     bot.send_photo(chat_id="652015662", photo=results_main[0]['link'], caption=results_main[0]['prompt'])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
-    print("Calling main...")
-    main()
+    server = Process(target=app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000))))
+    while True:
+        bot.send_message(chat_id="652015662", text="Calling main...")
+        main()
+        server.start()
+        time.sleep(10000)
+        server.terminate()
+        server.join()
 
-print(results_main)
 
+        
