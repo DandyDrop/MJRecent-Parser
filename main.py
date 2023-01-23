@@ -27,7 +27,7 @@ def handle_request():
 
 @bot.message_handler(commands=["main"])
 def main(m):
-    bot.send_message(chat_id="652015662", text=str(message))
+    bot.send_message(chat_id="652015662", text=str(m))
     bot.send_message(chat_id="652015662", text="Executed the main func")
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
