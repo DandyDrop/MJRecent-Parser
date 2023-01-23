@@ -8,11 +8,12 @@ import requests
 import telebot
 
 app = Flask(__name__)
-bot = telebot.TeleBot("5809276134:AAGuKn5wiaMqQwB_7_yce0_mHLufcdvn4eA")
+bot = telebot.TeleBot(TOKEN)
 results_main = []
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
+    bot.send_message(chat_id="652015662", text="new request")
     bot.send_message(chat_id="652015662", text=request.headers.get('content-type'))
     bot.send_message(chat_id="652015662", text=request.json.get('pass1234'))
 #     bot.send_message(chat_id="652015662", text=str(type(request.json)))
@@ -20,7 +21,7 @@ def handle_request():
 #     bot.send_message(chat_id="652015662", text=request.json['pass'])
 #     bot.send_message(chat_id="652015662", text=str(type(request.method)))
     
-    if request.json.get("pass1234") != None:
+    if request.json.get(PASS) != None:
         bot.send_message(chat_id="652015662", text="Ye")         
         some_func()
         return ""
