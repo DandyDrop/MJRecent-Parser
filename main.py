@@ -1,5 +1,4 @@
-import os
-import time
+mport time
 import json
 import flask
 from flask import Flask, request, Response
@@ -7,7 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 import telebot
 
-bot = telebot.TeleBot("5809276134:AAGuKn5wiaMqQwB_7_yce0_mHLufcdvn4eA")
+bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 results_main = []
 main_dict = {}
