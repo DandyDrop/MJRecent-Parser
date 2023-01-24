@@ -36,7 +36,7 @@ def handle_request():
 @bot.message_handler(commands=["start", "renew"])
 def start_set(m):
     bot.send_message(chat_id=m.chat.id, text='New images are here! Send "/photo" to see ;) ')
-    main_dict[m.chat.id] = results_main
+    main_dict[m.chat.id] = results_main.copy()
     
     
 @bot.message_handler(commands=["photo"])
