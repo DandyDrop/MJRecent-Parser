@@ -1,5 +1,4 @@
 import os
-import time
 import json
 import flask
 from flask import Flask, request, Response
@@ -12,10 +11,12 @@ app = Flask(__name__)
 results_main = []
 main_dict = {}
 
+
 @app.route('/', methods=['HEAD'])
-def handle_head():    
+def handle_head():
     renew_main()
     return ""
+
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
@@ -30,21 +31,22 @@ def handle_request():
         return Response("OK", status=200)
     else:
         return ""
-    
-    
+
+
 @bot.message_handler(commands=["start"])
 def on_start(m):
-    bot.send_message(chat_id=m.chat.id, text="Hello. I can send you great arts from midjourney.com/showcase/recent with prompts." 
-                                             "With me you can learn how to write your own text instructions and have a joy seeing cool pics, of course ;)" 
-                                             'Send "/renew" if you want to make fresh images avaible for you. Get your images by sending "/image"')
-    
-    
+    bot.send_message(chat_id=m.chat.id,
+                     text="Hello. I can send you great arts from midjourney.com/showcase/recent with prompts."
+                          "With me you can learn how to write your own text instructions and have a joy seeing cool pics, of course ;)"
+                          'Send "/renew" if you want to make fresh images avaible for you. Get your images by sending "/image"')
+
+
 @bot.message_handler(commands=["renew"])
 def start_set(m):
     bot.send_message(chat_id=m.chat.id, text='Your list of images was updated! Send "/image" to see ;) ')
     main_dict[m.chat.id] = results_main.copy()
-    
-    
+
+
 @bot.message_handler(commands=["image"])
 def sendNewImage(m):
     image = main_dict[m.chat.id].pop()
@@ -54,7 +56,7 @@ def sendNewImage(m):
         caption=image["prompt"]
     )
 
-    
+
 def renew_main():
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
@@ -74,5 +76,6 @@ def renew_main():
         except KeyError:
             continue
 
-renew_main()           
+
+renew_main()
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
