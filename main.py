@@ -6,7 +6,6 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
-from multiprocessing import Process
 
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
