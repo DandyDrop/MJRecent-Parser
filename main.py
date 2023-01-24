@@ -35,7 +35,7 @@ def handle_request():
     
 @bot.message_handler(commands=["renew"])
 def randomMJRecent(m):
-    bot.send_message(m.chat.id, "Anus")
+    bot.send_message(652015662, "Anus")
     
 
 def some_func():
