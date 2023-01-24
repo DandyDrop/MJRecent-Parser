@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import flask
 from flask import Flask, request, Response
@@ -6,20 +7,16 @@ from bs4 import BeautifulSoup
 import requests
 import telebot
 
+bot = telebot.TeleBot("5809276134:AAGuKn5wiaMqQwB_7_yce0_mHLufcdvn4eA")
 app = Flask(__name__)
-bot = telebot.TeleBot(os.environ.get("TOKEN"))
 results_main = []
 main_dict = {}
 
+
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
-    if request.json.get(os.environ.get("PASS")) != None:
-        bot.send_message(chat_id="652015662", text="Ye")         
-        some_func()
-        return ""
-    elif request.headers.get('content-type') == "application/json":
+    if request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
-        bot.send_message(chat_id="652015662", text=str(request))
         bot.process_new_updates([update])
         return ""
     else:
@@ -29,25 +26,9 @@ def handle_request():
         return Response("OK", status=200)
     else:
         return ""
-    
-    
-@bot.message_handler(commands=["renew"])
-def randomMJRecent(m):
-    main_dict[m.chat.id] = results_main
-    
-    
-@bot.message_handler(commands=["next"])
-def sendNewImage(m):
-    image = main_dict[m.chat.id].pop()
-    bot.send_photo(
-        chat_id=m.chat.id,
-        photo=image["link"],
-        caption=image["prompt"]
-    )
 
-    
-def some_func():
-    bot.send_message(chat_id="652015662", text="Hello from some_func")
+
+def main():
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -65,7 +46,22 @@ def some_func():
         except KeyError:
             continue
 
-    
-app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
-        
+@bot.message_handler(commands=["renew"])
+def randomMJRecent(m):
+    main_dict[m.chat.id] = results_main
+
+
+@bot.message_handler(commands=["next"])
+def sendNewImage(m):
+    image = main_dict[m.chat.id].pop()
+    bot.send_photo(
+        chat_id=m.chat.id,
+        photo=image["link"],
+        caption=image["prompt"]
+    )
+
+
+main()
+app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+    # time.sleep(86400)
