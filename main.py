@@ -13,10 +13,9 @@ results_main = []
 main_dict = {}
 
 @app.route('/', methods=['HEAD'])
-def handle_head():
-    bot.send_message(chat_id="652015662", text="Ye")         
-    renew()
-    return Response("OK", status=200)
+def handle_head():    
+    renew_main()
+    return ""
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
@@ -33,13 +32,20 @@ def handle_request():
         return ""
     
     
-@bot.message_handler(commands=["start", "renew"])
+@bot.message_handler(commands=["start"])
+def on_start(m):
+    bot.send_message(chat_id=m.chat.id, text="Hello. I can send you great arts from midjourney.com/showcase/recent with prompts." 
+                                             "With me you can learn how to write your own text instructions and have a joy seeing cool pics, of course ;)" 
+                                             'Send "/renew" if you want to make fresh images avaible for you. Get your images by sending "/image"')
+    
+    
+@bot.message_handler(commands=["renew"])
 def start_set(m):
-    bot.send_message(chat_id=m.chat.id, text='New images are here! Send "/photo" to see ;) ')
+    bot.send_message(chat_id=m.chat.id, text='Your list of images was updated! Send "/image" to see ;) ')
     main_dict[m.chat.id] = results_main.copy()
     
     
-@bot.message_handler(commands=["photo"])
+@bot.message_handler(commands=["image"])
 def sendNewImage(m):
     image = main_dict[m.chat.id].pop()
     bot.send_photo(
@@ -47,13 +53,9 @@ def sendNewImage(m):
         photo=image["link"],
         caption=image["prompt"]
     )
-    for key in main_dict:
-        bot.send_message(chat_id="652015662", text=key)
-        bot.send_message(chat_id="652015662", text=len(main_dict[key]))
 
     
-def renew():
-    bot.send_message(chat_id="652015662", text="Executed the main func")
+def renew_main():
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -72,5 +74,5 @@ def renew():
         except KeyError:
             continue
 
-renew()           
+renew_main()           
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
