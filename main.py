@@ -6,6 +6,7 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
+from multiprocessing import Process
 
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
@@ -52,8 +53,12 @@ def main():
 #         except KeyError:
 #             continue
 
+server = Process(target=app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000))))
 while True:
+    bot.send_message(chat_id="652015662", text="Calling main...")
     main()
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+    server.start()
     time.sleep(10)
+    server.terminate()
+    server.join()
     # time.sleep(86400)
