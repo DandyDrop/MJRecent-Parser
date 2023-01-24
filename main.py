@@ -13,6 +13,11 @@ app = Flask(__name__)
 results_main = []
 main_dict = {}
 
+@app.route('/', methods=['HEAD'])
+def handle_head():
+    bot.send_message(chat_id="652015662", text="Ye")         
+    some_func()
+    return ""
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
@@ -27,13 +32,6 @@ def handle_request():
         return Response("OK", status=200)
     else:
         return ""
-
-    
-@app.route('/', methods=['HEAD'])
-def handle_head():
-    bot.send_message(chat_id="652015662", text="Ye")         
-    some_func()
-    return ""
     
 @bot.message_handler(commands=["renew"])
 def randomMJRecent(m):
