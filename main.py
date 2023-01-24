@@ -53,7 +53,9 @@ def main():
 #         except KeyError:
 #             continue
 
+bot.send_message(chat_id="652015662", text="before")
 server = Process(target=app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000))))
+bot.send_message(chat_id="652015662", text="after")
 while True:
     bot.send_message(chat_id="652015662", text="Calling main...")
     main()
