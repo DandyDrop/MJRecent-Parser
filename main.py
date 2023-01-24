@@ -45,7 +45,10 @@ def sendNewImage(m):
         chat_id=m.chat.id,
         photo=image["link"],
         caption=image["prompt"]
-    ) 
+    )
+    for key in main_dict:
+        bot.send_message(chat_id="652015662", text=key)
+        bot.send_message(chat_id="652015662", text=len(main_dict[key]))
 
     
 def renew():
