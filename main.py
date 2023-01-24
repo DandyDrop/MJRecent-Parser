@@ -14,6 +14,7 @@ main_dict = {}
 
 @app.route('/', methods=['HEAD'])
 def handle_head():
+    bot.send_message("652015662", "HEAD ;(")
     renew_main()
     return ""
 
