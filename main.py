@@ -14,13 +14,9 @@ results_main = []
 main_dict = {}
 
 
-@app.route('/', methods=['POST', 'GET', 'HEAD'])
+@app.route('/', methods=['POST', 'GET'])
 def handle_request():
-    if request.method == "HEAD" and request.json.get(os.environ.get("PASS")) != None:
-        bot.send_message(chat_id="652015662", text="Ye")         
-        some_func()
-        return ""
-    elif request.headers.get('content-type') == "application/json":
+    if request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
         bot.process_new_updates([update])
         return ""
@@ -32,11 +28,17 @@ def handle_request():
     else:
         return ""
 
-
+    
+@app.route('/', methods=['HEAD'])
+def handle_head():
+    bot.send_message(chat_id="652015662", text="Ye")         
+    some_func()
+    return ""
+    
 @bot.message_handler(commands=["renew"])
 def randomMJRecent(m):
     bot.send_message(m.chat.id, "Anus")
-
+    
 
 def some_func():
     bot.send_message(chat_id="652015662", text="Executed the main func")
