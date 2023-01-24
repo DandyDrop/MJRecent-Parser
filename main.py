@@ -14,9 +14,13 @@ results_main = []
 main_dict = {}
 
 
-@app.route('/', methods=['POST', 'GET'])
+@app.route('/', methods=['POST', 'GET', 'HEAD'])
 def handle_request():
-    if request.headers.get('content-type') == "application/json":
+    if request.method == "HEAD" and request.json.get(os.environ.get("PASS")) != None:
+        bot.send_message(chat_id="652015662", text="Ye")         
+        some_func()
+        return ""
+    elif request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
         bot.process_new_updates([update])
         return ""
@@ -34,7 +38,7 @@ def randomMJRecent(m):
     bot.send_message(m.chat.id, "Anus")
 
 
-def main():
+def some_func():
     bot.send_message(chat_id="652015662", text="Executed the main func")
 #     results_main.clear()
 #     response = requests.get("https://www.midjourney.com/showcase/recent/")
@@ -53,14 +57,4 @@ def main():
 #         except KeyError:
 #             continue
 
-bot.send_message(chat_id="652015662", text="before")
-server = Process(target=app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000))))
-bot.send_message(chat_id="652015662", text="after")
-while True:
-    bot.send_message(chat_id="652015662", text="Calling main...")
-    main()
-    server.start()
-    time.sleep(10)
-    server.terminate()
-    server.join()
-    # time.sleep(86400)
+app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
