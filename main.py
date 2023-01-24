@@ -59,6 +59,7 @@ def renew():
             bot.send_message(chat_id="652015662", text=f"Getting {script['id'][7:-2].lower()}...")
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
+            bot.send_message(chat_id="652015662", text=f"Got {len(jobs)} arts")
             for job in jobs:
                 results_main.append({"link": job['image_paths'][0],
                                      "prompt": job['full_command']
