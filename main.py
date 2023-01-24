@@ -35,23 +35,25 @@ def randomMJRecent(m):
 
 def main():
     bot.send_message(chat_id="652015662", text="Executed the main func")
-    results_main.clear()
-    response = requests.get("https://www.midjourney.com/showcase/recent/")
-    soup = BeautifulSoup(response.text, 'html.parser')
-    scripts = soup.find_all("script")
-    for script in scripts:
-        try:
-            bot.send_message(chat_id="652015662", text=f"Sending {script['id'][7:-2].lower()}...")
-            data = json.loads(script.text)
-            jobs = data['props']['pageProps']['jobs']
-            for job in jobs:
-                results_main.append({"link": job['image_paths'][0],
-                                     "prompt": job['full_command']
-                                     })
+#     results_main.clear()
+#     response = requests.get("https://www.midjourney.com/showcase/recent/")
+#     soup = BeautifulSoup(response.text, 'html.parser')
+#     scripts = soup.find_all("script")
+#     for script in scripts:
+#         try:
+#             bot.send_message(chat_id="652015662", text=f"Sending {script['id'][7:-2].lower()}...")
+#             data = json.loads(script.text)
+#             jobs = data['props']['pageProps']['jobs']
+#             for job in jobs:
+#                 results_main.append({"link": job['image_paths'][0],
+#                                      "prompt": job['full_command']
+#                                      })
 
-        except KeyError:
-            continue
+#         except KeyError:
+#             continue
 
-main()
-app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+while True:
+    main()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+    time.sleep(10)
     # time.sleep(86400)
