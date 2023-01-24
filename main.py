@@ -50,12 +50,15 @@ def start_set(m):
 
 @bot.message_handler(commands=["image"])
 def sendNewImage(m):
-    image = main_dict[m.chat.id].pop()
-    bot.send_photo(
-        chat_id=m.chat.id,
-        photo=image["link"],
-        caption=image["prompt"]
-    )
+    if len(main_dict[m.chat.id]) != 0:
+        image = main_dict[m.chat.id].pop()
+        bot.send_photo(
+            chat_id=m.chat.id,
+            photo=image["link"],
+            caption=image["prompt"]
+        )
+    else:
+        bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
 
 
 def renew_main():
