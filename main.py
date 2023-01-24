@@ -9,8 +9,8 @@ import telebot
 # bot = telebot.TeleBot(os.environ.get("TOKEN"))
 bot = telebot.TeleBot("5809276134:AAF7-wv7moPzGk81ajqbgY4pZ0cax-ido-0")
 app = Flask(__name__)
-results_main = []
-main_dict = {}
+# results_main = []
+# main_dict = {}
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -28,38 +28,10 @@ def handle_request():
         return ""
 
 
-def main():
-    results_main.clear()
-    response = requests.get("https://www.midjourney.com/showcase/recent/")
-    soup = BeautifulSoup(response.text, 'html.parser')
-    scripts = soup.find_all("script")
-    for script in scripts:
-        try:
-            bot.send_message(chat_id="652015662", text=f"Sending {script['id'][7:-2].lower()}...")
-            data = json.loads(script.text)
-            jobs = data['props']['pageProps']['jobs']
-            for job in jobs:
-                results_main.append({"link": job['image_paths'][0],
-                                     "prompt": job['full_command']
-                                     })
-
-        except KeyError:
-            continue
-
-
 @bot.message_handler(commands=["renew"])
 def randomMJRecent(m):
-    main_dict[m.chat.id] = results_main
+    bot.send_message(m.chat.id, "Anus")
 
-
-@bot.message_handler(commands=["next"])
-def sendNewImage(m):
-    image = main_dict[m.chat.id].pop()
-    bot.send_photo(
-        chat_id=m.chat.id,
-        photo=image["link"],
-        caption=image["prompt"]
-    )
 
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
     # time.sleep(86400)
