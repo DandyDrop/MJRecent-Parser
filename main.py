@@ -15,7 +15,7 @@ main_dict = {}
 @app.route('/', methods=['HEAD'])
 def handle_head():
     bot.send_message(chat_id="652015662", text="Ye")         
-    some_func()
+    renew()
     return ""
 
 @app.route('/', methods=['POST', 'GET'])
@@ -32,28 +32,39 @@ def handle_request():
     else:
         return ""
     
-@bot.message_handler(commands=["renew"])
-def randomMJRecent(m):
-    bot.send_message("652015662", "Anus")
+@bot.message_handler(commands=["start", "renew"])
+def start_set(m):
+    main_dict[m.chat.id] = results_main
     
+    
+@bot.message_handler(commands=["next"])
+def sendNewImage(m):
+    image = main_dict[m.chat.id].pop()
+    bot.send_photo(
+        chat_id=m.chat.id,
+        photo=image["link"],
+        caption=image["prompt"]
+    ) 
 
-def some_func():
+    
+def renew():
     bot.send_message(chat_id="652015662", text="Executed the main func")
-#     results_main.clear()
-#     response = requests.get("https://www.midjourney.com/showcase/recent/")
-#     soup = BeautifulSoup(response.text, 'html.parser')
-#     scripts = soup.find_all("script")
-#     for script in scripts:
-#         try:
-#             bot.send_message(chat_id="652015662", text=f"Sending {script['id'][7:-2].lower()}...")
-#             data = json.loads(script.text)
-#             jobs = data['props']['pageProps']['jobs']
-#             for job in jobs:
-#                 results_main.append({"link": job['image_paths'][0],
-#                                      "prompt": job['full_command']
-#                                      })
+    results_main.clear()
+    response = requests.get("https://www.midjourney.com/showcase/recent/")
+    soup = BeautifulSoup(response.text, 'html.parser')
+    scripts = soup.find_all("script")
+    for script in scripts:
+        try:
+            bot.send_message(chat_id="652015662", text=f"Getting {script['id'][7:-2].lower()}...")
+            data = json.loads(script.text)
+            jobs = data['props']['pageProps']['jobs']
+            for job in jobs:
+                results_main.append({"link": job['image_paths'][0],
+                                     "prompt": job['full_command']
+                                     })
 
-#         except KeyError:
-#             continue
+        except KeyError:
+            continue
 
+            
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
