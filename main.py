@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import flask
@@ -7,7 +8,7 @@ import requests
 import telebot
 
 # bot = telebot.TeleBot(os.environ.get("TOKEN"))
-bot = telebot.TeleBot("5809276134:AAF7-wv7moPzGk81ajqbgY4pZ0cax-ido-0")
+bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 # results_main = []
 # main_dict = {}
