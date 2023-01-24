@@ -32,6 +32,7 @@ def handle_request():
     else:
         return ""
     
+    
 @bot.message_handler(commands=["start", "renew"])
 def start_set(m):
     bot.send_message(chat_id=m.chat.id, text='New images are here! Send "/photo" to see ;) ')
@@ -71,5 +72,5 @@ def renew():
         except KeyError:
             continue
 
-            
+renew()           
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
