@@ -16,7 +16,7 @@ main_dict = {}
 def handle_head():
     bot.send_message(chat_id="652015662", text="Ye")         
     renew()
-    return ""
+    return Response("OK", status=200)
 
 @app.route('/', methods=['POST', 'GET'])
 def handle_request():
@@ -34,10 +34,11 @@ def handle_request():
     
 @bot.message_handler(commands=["start", "renew"])
 def start_set(m):
+    bot.send_message(chat_id=m.chat.id, text='New images are here! Send "/photo" to see ;) ')
     main_dict[m.chat.id] = results_main
     
     
-@bot.message_handler(commands=["next"])
+@bot.message_handler(commands=["photo"])
 def sendNewImage(m):
     image = main_dict[m.chat.id].pop()
     bot.send_photo(
