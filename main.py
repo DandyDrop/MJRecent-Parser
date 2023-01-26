@@ -43,20 +43,23 @@ def on_start(m):
 
 
 @bot.message_handler(commands=["renew"])
-def start_set(m):
-    bot.send_message(chat_id=m.chat.id, text='Your list of images was updated! Send "/image" to see ;) ')
+def renew(m):
     main_dict[m.chat.id] = results_main.copy()
+    bot.send_message(chat_id=m.chat.id, text='Your list of images was updated! Send "/image" to see ;) ')
 
 
 @bot.message_handler(commands=["image"])
 def sendNewImage(m):
     if len(main_dict[m.chat.id]) != 0:
-        image = main_dict[m.chat.id].pop()
-        bot.send_photo(
-            chat_id=m.chat.id,
-            photo=image["link"],
-            caption=image["prompt"]
-        )
+        try:
+            image = main_dict[m.chat.id].pop()
+            bot.send_photo(
+                chat_id=m.chat.id,
+                photo=image["link"],
+                caption=image["prompt"]
+            )
+        except KeyError:
+            bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
     else:
         bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
 
@@ -67,8 +70,7 @@ def renew_main():
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
     for script in scripts:
-        try:
-            bot.send_message(chat_id="652015662", text=f"Getting {script['id'][7:-2].lower()}...")
+        if script.get('id') != None:
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
             for job in jobs:
@@ -76,8 +78,7 @@ def renew_main():
                                      "prompt": job['full_command']
                                      })
 
-        except KeyError:
-            continue
+            break
 
 
 renew_main()
