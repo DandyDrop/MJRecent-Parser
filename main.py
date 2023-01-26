@@ -58,7 +58,8 @@ def sendNewImage(m):
                 photo=image["link"],
                 caption=image["prompt"]
             )
-        except KeyError:
+        except Exception as e:
+            bot.send_message(chat_id="@logsmj", text=str(e))
             bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
     else:
         bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
