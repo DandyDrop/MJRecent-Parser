@@ -41,9 +41,9 @@ def handle_request():
 @bot.message_handler(commands=["start"])
 def on_start(m):
     bot.send_message(chat_id=m.chat.id,
-                     text="Hello. I can send you great arts from midjourney.com/showcase/recent with prompts."
-                          "With me you can learn how to write your own text instructions and have a joy seeing cool pics, of course ;)"
-                          'Send "/renew" if you want to make fresh images avaible for you. Get your images by sending "/image"')
+                     text="Hello. I can send you great arts from midjourney.com/showcase/recent with prompts. "
+                          "With me you can learn how to write your own text instructions and have a joy seeing cool pics, of course ;) "
+                          'Send "/renew" if you want to make fresh images avaible for you.')
 
 
 @bot.message_handler(commands=["renew"])
@@ -54,25 +54,6 @@ def renew(m):
                      text='Your list of images was updated!',
                      reply_markup=markup
                     )
-
-    
-# @bot.message_handler(commands=["image"])
-# def sendNewImage(m):
-#     try:
-#         if len(main_dict[m.chat.id]) != 0:
-#             image = main_dict[m.chat.id].pop()
-#             bot.send_photo(
-#                 chat_id=m.chat.id,
-#                 photo=image["link"],
-#                 caption=image["prompt"],
-#                 reply_markup=markup
-#             )
-#         else:
-#             bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
-
-#     except KeyError:
-# #         bot.send_message(chat_id="@logsmj", text=str(e))
-#         bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
 
 
 def renew_main():
@@ -111,5 +92,9 @@ def callback_inline(call):
         bot.send_message(chat_id=id, text='Looks like I got no images for you. Try to "/renew"')
 
         
-renew_main()
-app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+def main():
+    renew_main()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+    
+if __name__ == '__main__':
+    main()
