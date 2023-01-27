@@ -12,7 +12,7 @@ app = Flask(__name__)
 results_main = []
 main_dict = {}
 markup = types.InlineKeyboardMarkup()
-button1 = telebot.types.InlineKeyboardButton(text='Next Pic', callback_data="buttonmore")
+button1 = telebot.types.InlineKeyboardButton(text='Get pic', callback_data="buttonmore")
 markup.add(button1)
 
 
@@ -49,26 +49,30 @@ def on_start(m):
 @bot.message_handler(commands=["renew"])
 def renew(m):
     main_dict[m.chat.id] = results_main.copy()
-    bot.send_message(chat_id=m.chat.id, text='Your list of images was updated! Send "/image" to see ;) ')
+    bot.send_message(
+                     chat_id=m.chat.id, 
+                     text='Your list of images was updated!',
+                     reply_markup=markup
+                    )
 
     
-@bot.message_handler(commands=["image"])
-def sendNewImage(m):
-    try:
-        if len(main_dict[m.chat.id]) != 0:
-            image = main_dict[m.chat.id].pop()
-            bot.send_photo(
-                chat_id=m.chat.id,
-                photo=image["link"],
-                caption=image["prompt"],
-                reply_markup=markup
-            )
-        else:
-            bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
+# @bot.message_handler(commands=["image"])
+# def sendNewImage(m):
+#     try:
+#         if len(main_dict[m.chat.id]) != 0:
+#             image = main_dict[m.chat.id].pop()
+#             bot.send_photo(
+#                 chat_id=m.chat.id,
+#                 photo=image["link"],
+#                 caption=image["prompt"],
+#                 reply_markup=markup
+#             )
+#         else:
+#             bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
 
-    except KeyError:
-#         bot.send_message(chat_id="@logsmj", text=str(e))
-        bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
+#     except KeyError:
+# #         bot.send_message(chat_id="@logsmj", text=str(e))
+#         bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
 
 
 def renew_main():
@@ -107,5 +111,6 @@ def callback_inline(call):
         bot.send_message(chat_id="@logsmj", text=str(e))
         bot.send_message(chat_id=id, text='Looks like I got no images for you. Try to "/renew"')
 
+        
 renew_main()
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
