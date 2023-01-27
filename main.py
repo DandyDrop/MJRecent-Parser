@@ -5,11 +5,15 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
+from telebot import types
 
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 results_main = []
 main_dict = {}
+markup = types.InlineKeyboardMarkup()
+button1 = telebot.types.InlineKeyboardButton(text='Next Pic', callback_data="buttonmore")
+markup.add(button1)
 
 
 @app.route('/', methods=['HEAD'])
@@ -56,7 +60,8 @@ def sendNewImage(m):
             bot.send_photo(
                 chat_id=m.chat.id,
                 photo=image["link"],
-                caption=image["prompt"]
+                caption=image["prompt"],
+                reply_markup=markup
             )
         else:
             bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
@@ -82,6 +87,25 @@ def renew_main():
 
             break
 
+            
+@bot.callback_query_handler(func=lambda call: True)
+def callback_inline(call):
+    id = call.message.chat.id
+    try:
+        if len(main_dict[id]) != 0:
+            image = main_dict[id].pop()
+            bot.send_photo(
+                chat_id=id,
+                photo=image["link"],
+                caption=image["prompt"],
+                reply_markup=markup
+            )
+        else:
+            bot.send_message(chat_id=id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
+
+    except KeyError:
+        bot.send_message(chat_id="@logsmj", text=str(e))
+        bot.send_message(chat_id=id, text='Looks like I got no images for you. Try to "/renew"')
 
 renew_main()
 app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
