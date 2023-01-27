@@ -108,7 +108,6 @@ def callback_inline(call):
             bot.send_message(chat_id=id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
 
     except KeyError:
-        bot.send_message(chat_id="@logsmj", text=str(e))
         bot.send_message(chat_id=id, text='Looks like I got no images for you. Try to "/renew"')
 
         
