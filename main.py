@@ -18,7 +18,7 @@ markup.add(button1)
 
 @app.route('/', methods=['HEAD'])
 def handle_head():
-    bot.send_message("652015662", "HEAD ;(")
+    bot.send_message("@logsmj", "Detected HEAD request")
     renew_main()
     return ""
 
