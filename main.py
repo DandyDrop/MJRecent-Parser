@@ -47,7 +47,7 @@ def renew(m):
     main_dict[m.chat.id] = results_main.copy()
     bot.send_message(chat_id=m.chat.id, text='Your list of images was updated! Send "/image" to see ;) ')
 
-
+    
 @bot.message_handler(commands=["image"])
 def sendNewImage(m):
     try:
@@ -62,8 +62,8 @@ def sendNewImage(m):
             bot.send_message(chat_id=m.chat.id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
 
     except Exception as e:
-            bot.send_message(chat_id="@logsmj", text=str(e))
-            bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
+        bot.send_message(chat_id="@logsmj", text=str(e))
+        bot.send_message(chat_id=m.chat.id, text='Looks like I got no images for you. Try to "/renew"')
 
 
 def renew_main():
