@@ -12,7 +12,7 @@ app = Flask(__name__)
 results_main = []
 main_dict = {}
 markup = types.InlineKeyboardMarkup()
-button1 = telebot.types.InlineKeyboardButton(text='Get pic', callback_data="buttonmore")
+button1 = telebot.types.InlineKeyboardButton(text='𝐆𝐄𝐓 𝐏𝐈𝐂', callback_data="buttonmore")
 markup.add(button1)
 
 
@@ -89,7 +89,7 @@ def callback_inline(call):
             bot.send_message(chat_id=id, text='You saw all images. Use "/renew" to see more or take a closer look to the images above ;) ')
 
     except KeyError:
-        bot.send_message(chat_id=id, text='Looks like I got no images for you. Try to "/renew"')
+        bot.send_message(chat_id=id, text='Looks like I got no images for you.\nTry to "/renew"')
 
         
 def main():
