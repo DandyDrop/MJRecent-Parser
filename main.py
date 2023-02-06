@@ -24,6 +24,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['HEAD'])
 def handle_request():
+    bot.send_message("@logsmj", "Detected HEAD request (adaptime)")
     send_main()
     return ""
 
