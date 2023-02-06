@@ -21,7 +21,6 @@ app = Flask(__name__)
 #         bot.send_message("@logsmj", "Wrong pass")
 #     return ""
 
-
 @app.route('/', methods=['HEAD'])
 def handle_request():
     bot.send_message("@logsmj", "Detected HEAD request (adaptime)")
