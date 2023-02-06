@@ -9,9 +9,6 @@ import telebot
 
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
-results_main = []
-# main_dict = {}
-
 
 @app.route('/', methods=['POST'])
 def handle_request():
@@ -30,7 +27,6 @@ def handle_request():
     send_main()
     
 def send_main():
-    results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
