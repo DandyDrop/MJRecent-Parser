@@ -19,6 +19,8 @@ def handle_request():
         bot.send_message("@logsmj", "Detected POST request without a pass!")
     elif request.form.get("pass") == "210123scasd1fcas":
         bot.send_message("@logsmj", "Detected POST request with a right pass!")
+    else:
+        bot.send_message("@logsmj", "Wrong pass")
     return ""
 
 
