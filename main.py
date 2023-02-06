@@ -14,7 +14,8 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def handle_request():
-    bot.send_message("@logsmj", "Detected HEAD request")
+    bot.send_message("@logsmj", "Detected POST request (adaptime)")
+    return ""
 
 
 def renew_main():
