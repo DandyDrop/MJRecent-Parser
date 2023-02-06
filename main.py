@@ -21,10 +21,12 @@ def handle_request():
         bot.send_message("@logsmj", "Wrong pass")
     return ""
 
+
 @app.route('/', methods=['HEAD'])
 def handle_request():
     send_main()
     return ""
+ 
     
 def send_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
