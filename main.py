@@ -8,7 +8,7 @@ import telebot
 
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
-# results_main = []
+results_main = []
 # main_dict = {}
 
 
