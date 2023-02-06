@@ -22,12 +22,12 @@ app = Flask(__name__)
 #     return ""
 
 
-# @app.route('/', methods=['HEAD'])
-# def handle_request():
-#     send_main()
-#     return ""
- 
-@app.route('/', methods=['HEAD'])    
+@app.route('/', methods=['HEAD'])
+def handle_request():
+    send_main()
+    return ""
+
+  
 def send_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -46,7 +46,6 @@ def send_main():
 
             break
     
-    return ""
 
         
 def main():
