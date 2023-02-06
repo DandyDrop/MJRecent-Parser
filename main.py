@@ -1,6 +1,5 @@
 import os
 import json
-import flask
 import time
 from flask import Flask, request, Response
 from bs4 import BeautifulSoup
@@ -35,6 +34,7 @@ def handle_request1():
     return ""
 
 def get_main():
+    results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
@@ -53,7 +53,7 @@ def send_main():
     if len(results_main) != 0:
         image = results_main.pop()
         bot.send_photo(
-            chat_id="@logsmj",
+            chat_id="@mjrecent",
             photo=image["link"],
             caption=image["prompt"]
         )
