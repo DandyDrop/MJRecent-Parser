@@ -25,13 +25,13 @@ app = Flask(__name__)
 @app.route('/', methods=['HEAD'])
 def handle_request():
     bot.send_message("@logsmj", "Detected HEAD request (adaptime)")
-    get_main()
+    send_main()
     return ""
 
 @app.route('/', methods=['POST'])
 def handle_request1():
     bot.send_message("@logsmj", "Detected POST request (adaptime)")
-    send_main()
+    get_main()
     return ""
 
 def get_main():
