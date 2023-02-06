@@ -15,6 +15,10 @@ app = Flask(__name__)
 @app.route('/', methods=['POST'])
 def handle_request():
     bot.send_message("@logsmj", "Detected POST request (adaptime)")
+    if request.data.get("pass") == None:
+        bot.send_message("@logsmj", "Detected POST request without a pass!")
+    elif request.data.get("pass") == "210123scasd1fcas":
+        bot.send_message("@logsmj", "Detected POST request with a right pass!")
     return ""
 
 
