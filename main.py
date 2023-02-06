@@ -1,6 +1,7 @@
 import os
 import json
 import flask
+import time
 from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
@@ -24,7 +25,11 @@ def handle_request():
     return ""
 
 
-def renew_main():
+@app.route('/', methods=['POST'])
+def handle_request():
+    send_main()
+    
+def send_main():
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -34,15 +39,18 @@ def renew_main():
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
             for job in jobs:
-                results_main.append({"link": job['image_paths'][0],
-                                     "prompt": job['full_command']
-                                     })
+                bot.send_photo(
+                    chat_id="@logsmj",
+                    photo=job['image_paths'][0],
+                    caption=job['full_command']
+                )
+                time.sleep(10)
 
             break
 
         
 def main():
-#     renew_main()
+    send_main()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
     
 if __name__ == '__main__':
