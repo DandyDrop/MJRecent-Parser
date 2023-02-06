@@ -10,24 +10,24 @@ import telebot
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 
-@app.route('/', methods=['POST'])
-def handle_request():
-    bot.send_message("@logsmj", "Detected POST request (adaptime)")
-    if request.form.get("pass") == None:
-        bot.send_message("@logsmj", "Detected POST request without a pass!")
-    elif request.form.get("pass") == "210123scasd1fcas":
-        bot.send_message("@logsmj", "Detected POST request with a right pass!")
-    else:
-        bot.send_message("@logsmj", "Wrong pass")
-    return ""
+# @app.route('/', methods=['POST'])
+# def handle_request():
+#     bot.send_message("@logsmj", "Detected POST request (adaptime)")
+#     if request.form.get("pass") == None:
+#         bot.send_message("@logsmj", "Detected POST request without a pass!")
+#     elif request.form.get("pass") == "210123scasd1fcas":
+#         bot.send_message("@logsmj", "Detected POST request with a right pass!")
+#     else:
+#         bot.send_message("@logsmj", "Wrong pass")
+#     return ""
 
 
-@app.route('/', methods=['HEAD'])
-def handle_request():
-    send_main()
-    return ""
+# @app.route('/', methods=['HEAD'])
+# def handle_request():
+#     send_main()
+#     return ""
  
-    
+@app.route('/', methods=['HEAD'])    
 def send_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -45,10 +45,11 @@ def send_main():
                 time.sleep(10)
 
             break
+    
+    return ""
 
         
 def main():
-    send_main()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
     
 if __name__ == '__main__':
