@@ -21,17 +21,32 @@ app = Flask(__name__)
 #         bot.send_message("@logsmj", "Wrong pass")
 #     return ""
 
-@app.route('/', methods=['HEAD'])
-def handle_request():
-    bot.send_message("@logsmj", "Detected HEAD request (adaptime)")
-    send_main()
+@app.before_request
+def first():
+    bot.send_message("@logsmj", "Accessed before_request")
+    try:
+        if request.method == 'POST':
+            bot.send_message("@logsmj", "Detected POST request (FIRST)")
+            get_main()
+        else:
+            bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
+            send_main()
+    except Exception as e:
+        bot.send_message("@logsmj", f"error:\n{str(e)}")
+    
     return ""
 
-@app.route('/', methods=['POST'])
-def handle_request1():
-    bot.send_message("@logsmj", "Detected POST request (adaptime)")
-    get_main()
-    return ""
+# @app.route('/', methods=['HEAD'])
+# def handle_request():
+#     bot.send_message("@logsmj", "Detected HEAD request (adaptime)")
+#     send_main()
+#     return ""
+
+# @app.route('/', methods=['POST'])
+# def handle_request1():
+#     bot.send_message("@logsmj", "Detected POST request (adaptime)")
+#     get_main()
+#     return ""
 
 def get_main():
     results_main.clear()
