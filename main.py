@@ -42,7 +42,7 @@ def get_main():
 
             break
             
-    bot.send_message("@AUniqD", f"Got {len(results_main)} new images!")
+    bot.send_message("652015662", f"Got {len(results_main)} new images!")
     
 def send_main():
     for i in range(3):
