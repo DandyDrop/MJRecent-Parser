@@ -1,7 +1,6 @@
 import os
 import json
-import time
-from flask import Flask, request, Response
+from flask import Flask, request
 from bs4 import BeautifulSoup
 import requests
 import telebot
@@ -10,43 +9,22 @@ results_main = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 
-# @app.route('/', methods=['POST'])
-# def handle_request():
-#     bot.send_message("@logsmj", "Detected POST request (adaptime)")
-#     if request.form.get("pass") == None:
-#         bot.send_message("@logsmj", "Detected POST request without a pass!")
-#     elif request.form.get("pass") == "210123scasd1fcas":
-#         bot.send_message("@logsmj", "Detected POST request with a right pass!")
-#     else:
-#         bot.send_message("@logsmj", "Wrong pass")
-#     return ""
-
 @app.before_request
-def first():
-    bot.send_message("@logsmj", "Accessed before_request")
+def handle():
     try:
         if request.method == 'POST':
             bot.send_message("@logsmj", "Detected POST request (FIRST)")
             get_main()
-        else:
+        elif request.method == 'HEAD':
             bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
             send_main()
+        else:
+            bot.send_message("@logsmj", f"Detected some {request.method} request (FIRST)")
     except Exception as e:
-        bot.send_message("@logsmj", f"error:\n{str(e)}")
+        e = str(e)
+        bot.send_message("@logsmj", f"interesting error:\n{e}")
     
     return ""
-
-# @app.route('/', methods=['HEAD'])
-# def handle_request():
-#     bot.send_message("@logsmj", "Detected HEAD request (adaptime)")
-#     send_main()
-#     return ""
-
-# @app.route('/', methods=['POST'])
-# def handle_request1():
-#     bot.send_message("@logsmj", "Detected POST request (adaptime)")
-#     get_main()
-#     return ""
 
 def get_main():
     results_main.clear()
@@ -63,17 +41,31 @@ def get_main():
                                      })
 
             break
+            
+    bot.send_message("@logsmj", f"Got {len(results_main)} images")
     
 def send_main():
-    if len(results_main) != 0:
-        image = results_main.pop()
-        bot.send_photo(
-            chat_id="@mjrecent",
-            photo=image["link"],
-            caption=image["prompt"]
-        )
-    else:
-        bot.send_message("@logsmj", "No images")
+    for i in range(3):
+        try:
+            if len(results_main) != 0:
+                image = results_main.pop()
+                bot.send_photo(
+                    chat_id="@mjrecent",
+                    photo=image["link"],
+                    caption=image["prompt"]
+                )
+            else:
+                bot.send_message("@logsmj", "No images")
+            
+            break
+        except Exception as e:
+            e = str(e)
+            bot.send_message("@logsmj", f"error:\n{e}")
+            if "Bad Request" in e and request.method == 'HEAD':
+                continue
+            else:
+                break
+        
         
 def main():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
