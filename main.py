@@ -24,7 +24,7 @@ def handle():
             if request.form.get(os.environ.get("PASS")) != None:
                 get_main()
             else:
-                bot.send_message("@logsmj", f"Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}")
+                bot.send_message("@logsmj", f'Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}')
                 return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
