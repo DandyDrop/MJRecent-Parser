@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 import telebot
 
+prev_utc = "No date"
 results_main = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
@@ -42,15 +43,22 @@ def get_main():
         if script.get('id') != None:
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
-            for job in jobs:
-                results_main.append({"link": job['image_paths'][0],
-                                     "prompt": job['full_command']
-                                     })
+            if now_utc == "No date":
+                for job in jobs:
+                    results_main.append({"link": job['image_paths'][0],
+                                         "prompt": job['full_command']
+                                         })
+            else:
+                for job in jobs:
+                    if prev_utc.day <= day_job and prev_utc.hour <= hour_job and prev_utc.minute <= min_job: 
+                        results_main.append({"link": job['image_paths'][0],
+                                             "prompt": job['full_command']
+                                             })
 
             break
             
-    now_utc = str(datetime.now().utcnow())
-    bot.send_message("652015662", f"Got {len(results_main)} new images!\nTime set to {now_utc}")
+    prev_utc = datetime.now().utcnow()
+    bot.send_message("652015662", f"Got {len(results_main)} new images!\nTime set to {str(prev_utc)}")
 
 
 def send_main():
@@ -77,7 +85,6 @@ def send_main():
 
 
 def main():
-    get_main()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
 
