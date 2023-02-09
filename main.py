@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 import telebot
 
-prev_utc = "No date"
+now_utc = [datetime.now().utcnow(), "No date"]
 results_main = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
@@ -19,9 +19,10 @@ def handle():
         bot.send_message("@logsmj", f"Detected {request.method} request (FIRST) from {ip}")
         if request.method == 'POST':
             if request.form.get(os.environ.get("PASS")) != None:
-                get_main()
+                get_main(now_utc)
             else:
-                bot.send_message("@logsmj", f'Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}')
+                bot.send_message("@logsmj",
+                                 f'Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}')
                 return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
@@ -34,7 +35,8 @@ def handle():
     return ""
 
 
-def get_main():
+def get_main(prev_utc):
+    bot.send_message("652015662", f"Before get_main time is\n{str(prev_utc)}")
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -43,22 +45,26 @@ def get_main():
         if script.get('id') != None:
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
-            if now_utc == "No date":
+            if prev_utc[1] == "No date":
                 for job in jobs:
                     results_main.append({"link": job['image_paths'][0],
                                          "prompt": job['full_command']
                                          })
             else:
                 for job in jobs:
-                    if prev_utc.day <= day_job and prev_utc.hour <= hour_job and prev_utc.minute <= min_job: 
+                    day_job = int(job['enqueue_time'][8:10])
+                    hour_job = int(job['enqueue_time'][11:13])
+                    min_job = int(job['enqueue_time'][14:16])
+                    if prev_utc[0].day <= day_job and prev_utc[0].hour <= hour_job and prev_utc[0].minute <= min_job:
                         results_main.append({"link": job['image_paths'][0],
                                              "prompt": job['full_command']
                                              })
 
             break
-            
-    prev_utc = datetime.now().utcnow()
-    bot.send_message("652015662", f"Got {len(results_main)} new images!\nTime set to {str(prev_utc)}")
+
+    now_utc[0] = datetime.now().utcnow()
+    now_utc[1] = "Got date"
+    bot.send_message("652015662", f"Got {len(results_main)} new images!\n{now_utc[1]} {str(now_utc[0])}")
 
 
 def send_main():
