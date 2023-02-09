@@ -20,7 +20,7 @@ def handle():
                 bot.send_message("@logsmj",
                                  f"type:\n{type(request.get_json())}\nPASS: {request.get_json().get(os.environ.get('PASS'))}")
             except Exception as e:
-                bot.send_message("@logsmj", str(e))
+                bot.send_message("@logsmj", f"error:\n{str(e)}\nwith\nbot.send_message(...")
             if request.get_json().get(os.environ.get("PASS")) != None:
                 get_main()
             else:
