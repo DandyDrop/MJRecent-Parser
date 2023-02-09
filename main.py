@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, request
+from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
@@ -24,6 +24,7 @@ def handle():
             if request.args.get(os.environ.get("PASS")) != None:
                 get_main()
             else:
+                bot.send_message("@logsmj", f"sfsdfdsf")
                 return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
