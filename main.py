@@ -9,20 +9,22 @@ results_main = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 
+
 @app.before_request
 def handle():
     try:
         if request.method == 'POST':
             bot.send_message("@logsmj", "Detected POST request (FIRST)")
             try:
-                bot.send_message("@logsmj", f"type:\n{type(request.get_json())}\nPASS: {request.get_json().get(os.environ.get('PASS'))}")
+                bot.send_message("@logsmj",
+                                 f"type:\n{type(request.get_json())}\nPASS: {request.get_json().get(os.environ.get('PASS'))}")
             except Exception as e:
                 bot.send_message("@logsmj", str(e))
             if request.get_json().get(os.environ.get("PASS")) != None:
                 get_main()
             else:
                 return "No pass - @no_reception"
-                
+
         elif request.method == 'HEAD':
             bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
             send_main()
@@ -31,8 +33,9 @@ def handle():
     except Exception as e:
         e = str(e)
         bot.send_message("@logsmj", f"interesting error:\n{e}")
-    
+
     return ""
+
 
 def get_main():
     results_main.clear()
@@ -49,9 +52,10 @@ def get_main():
                                      })
 
             break
-            
+
     bot.send_message("652015662", f"Got {len(results_main)} new images!")
-    
+
+
 def send_main():
     for i in range(3):
         try:
@@ -64,19 +68,20 @@ def send_main():
                 )
             else:
                 bot.send_message("@logsmj", "No images")
-            
+
             break
         except Exception as e:
             e = str(e)
             bot.send_message("@logsmj", f"error:\n{e}")
-            if "Bad Request" in e and request.method == 'HEAD':
+            if "Bad Request" in e:
                 continue
             else:
                 break
-        
-        
+
+
 def main():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
-    
+
+
 if __name__ == '__main__':
     main()
