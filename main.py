@@ -15,7 +15,7 @@ def handle():
         if request.method == 'POST':
             bot.send_message("@logsmj", "Detected POST request (FIRST)")
             try:
-                bot.send_message("@logsmj", f"type:\n{type(request.get_json())}\nPASS: {request.get_json().get(os.environ.get("PASS"))}")
+                bot.send_message("@logsmj", f"type:\n{type(request.get_json())}\nPASS: {request.get_json().get(os.environ.get('PASS'))}")
             except Exception as e:
                 bot.send_message("@logsmj", str(e))
             if request.get_json().get(os.environ.get("PASS")) != None:
