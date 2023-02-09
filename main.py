@@ -24,7 +24,7 @@ def handle():
             if request.args.get(os.environ.get("PASS")) != None:
                 get_main()
             else:
-                return "No pass - @no_reception"
+                return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
 #             bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
