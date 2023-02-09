@@ -16,12 +16,12 @@ app = Flask(__name__)
 def handle():
     try:
         ip = request.remote_addr
-        bot.send_message("@logsmj", f"Detected {request.method} request (FIRST) from {ip}")
+        bot.send_message(os.environ.get("LOGS_USERNAME"), f"Detected {request.method} request (FIRST) from {ip}")
         if request.method == 'POST':
             if request.form.get(os.environ.get("PASS")) != None:
                 get_main(now_utc)
             else:
-                bot.send_message("@logsmj",
+                bot.send_message(os.environ.get("LOGS_USERNAME"),
                                  f'Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}')
                 return Response("No pass - @no_reception", status=403)
 
@@ -30,7 +30,7 @@ def handle():
 
     except Exception as e:
         e = str(e)
-        bot.send_message("@logsmj", f"interesting error:\n{e}")
+        bot.send_message(os.environ.get("LOGS_USERNAME"), f"interesting error:\n{e}")
 
     return ""
 
@@ -46,6 +46,7 @@ def get_main(prev_utc):
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
             if prev_utc[1] == "No date":
+                now_utc[1] = "Set date"
                 for job in jobs:
                     results_main.append({"link": job['image_paths'][0],
                                          "prompt": job['full_command']
@@ -63,7 +64,6 @@ def get_main(prev_utc):
             break
 
     now_utc[0] = datetime.now().utcnow()
-    now_utc[1] = "Got date"
     bot.send_message("652015662", f"Got {len(results_main)} new images!\n{now_utc[1]} {str(now_utc[0])}")
 
 
@@ -78,12 +78,13 @@ def send_main():
                     caption=image["prompt"]
                 )
             else:
-                bot.send_message("@logsmj", "No images")
+                bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main(now_utc)")
+                get_main(now_utc)
 
             break
         except Exception as e:
             e = str(e)
-            bot.send_message("@logsmj", f"error:\n{e}")
+            bot.send_message(os.environ.get("LOGS_USERNAME"), f"error:\n{e}")
             if "Bad Request" in e:
                 continue
             else:
