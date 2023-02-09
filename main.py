@@ -18,7 +18,7 @@ def handle():
         if request.method == 'POST':
             try:
                 bot.send_message("@logsmj",
-                                 f"type:\n{type(request.args)}\nPASS: {dict(request.args).get(str(os.environ.get("PASS")))}")
+                                 f'type:\n{type(request.args)}\nPASS: {dict(request.args).get(str(os.environ.get("PASS")))}')
             except Exception as e:
                 bot.send_message("@logsmj", f"error:\n{str(e)}\nwith\nbot.send_message(...")
             if request.args.get(os.environ.get("PASS")) != None or request.args.get(os.environ.get("PASS")) != "None":
