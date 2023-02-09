@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime
 from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
@@ -16,11 +17,6 @@ def handle():
         ip = request.remote_addr
         bot.send_message("@logsmj", f"Detected {request.method} request (FIRST) from {ip}")
         if request.method == 'POST':
-#             try:
-#                 bot.send_message("@logsmj",
-#                                  f'type:\n{type(request.args)}\nPASS: {request.form.get(os.environ.get("PASS"))}')
-#             except Exception as e:
-#                 bot.send_message("@logsmj", f"error:\n{str(e)}\nwith\nbot.send_message(...")
             if request.form.get(os.environ.get("PASS")) != None:
                 get_main()
             else:
@@ -28,10 +24,8 @@ def handle():
                 return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
-#             bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
             send_main()
-#         else:
-#             bot.send_message("@logsmj", f"Detected some {request.method} request (FIRST)")
+
     except Exception as e:
         e = str(e)
         bot.send_message("@logsmj", f"interesting error:\n{e}")
@@ -54,8 +48,9 @@ def get_main():
                                      })
 
             break
-
-    bot.send_message("652015662", f"Got {len(results_main)} new images!")
+            
+    now_utc = str(datetime.now().utcnow())
+    bot.send_message("652015662", f"Got {len(results_main)} new images!\nTime set to {now_utc}")
 
 
 def send_main():
@@ -82,6 +77,7 @@ def send_main():
 
 
 def main():
+    get_main()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
 
