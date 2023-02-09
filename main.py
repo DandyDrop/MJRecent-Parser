@@ -16,15 +16,15 @@ def handle():
         ip = request.remote_addr
         bot.send_message("@logsmj", f"Detected {request.method} request (FIRST) from {ip}")
         if request.method == 'POST':
-            try:
-                bot.send_message("@logsmj",
-                                 f'type:\n{type(request.args)}\nPASS: {dict(request.form).get(str(os.environ.get("PASS")))}')
-            except Exception as e:
-                bot.send_message("@logsmj", f"error:\n{str(e)}\nwith\nbot.send_message(...")
+#             try:
+#                 bot.send_message("@logsmj",
+#                                  f'type:\n{type(request.args)}\nPASS: {request.form.get(os.environ.get("PASS"))}')
+#             except Exception as e:
+#                 bot.send_message("@logsmj", f"error:\n{str(e)}\nwith\nbot.send_message(...")
             if request.form.get(os.environ.get("PASS")) != None:
                 get_main()
             else:
-                bot.send_message("@logsmj", f"sfsdfdsf")
+                bot.send_message("@logsmj", f"Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}")
                 return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
