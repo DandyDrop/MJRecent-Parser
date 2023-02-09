@@ -39,3 +39,15 @@ def sendNewImage(m):
 #     else:
 #         bot.send_message("@logsmj", "Wrong pass")
 #     return ""
+
+#             try:
+#                 bot.send_message("@logsmj",
+#                                  f'type:\n{type(request.args)}\nPASS: {request.form.get(os.environ.get("PASS"))}')
+#             except Exception as e:
+#                 bot.send_message("@logsmj", f"error:\n{str(e)}\nwith\nbot.send_message(...")
+
+#         else:
+#             bot.send_message("@logsmj", f"Detected some {request.method} request (FIRST)")
+
+#             bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
+
