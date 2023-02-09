@@ -13,8 +13,9 @@ app = Flask(__name__)
 @app.before_request
 def handle():
     try:
+        ip = request.remote_addr
+        bot.send_message("@logsmj", f"Detected {request.method} request (FIRST) from {ip}")
         if request.method == 'POST':
-            bot.send_message("@logsmj", "Detected POST request (FIRST)")
             try:
                 bot.send_message("@logsmj",
                                  f"type:\n{type(request.get_json())}\nPASS: {request.get_json().get(os.environ.get('PASS'))}")
@@ -26,10 +27,10 @@ def handle():
                 return "No pass - @no_reception"
 
         elif request.method == 'HEAD':
-            bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
+#             bot.send_message("@logsmj", "Detected HEAD request (FIRST)")
             send_main()
-        else:
-            bot.send_message("@logsmj", f"Detected some {request.method} request (FIRST)")
+#         else:
+#             bot.send_message("@logsmj", f"Detected some {request.method} request (FIRST)")
     except Exception as e:
         e = str(e)
         bot.send_message("@logsmj", f"interesting error:\n{e}")
