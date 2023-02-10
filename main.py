@@ -36,7 +36,7 @@ def handle():
 
 
 def get_main(prev_utc):
-    bot.send_message("652015662", f"Before get_main time is\n{str(prev_utc)}")
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Before get_main time is\n{str(prev_utc)}")
     results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -64,7 +64,7 @@ def get_main(prev_utc):
             break
 
     now_utc[0] = datetime.now().utcnow()
-    bot.send_message("652015662", f"Got {len(results_main)} new images!\n{now_utc[1]} {str(now_utc[0])}")
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Got {len(results_main)} new images!\n{now_utc[1]} {str(now_utc[0])}")
 
 
 def send_main():
