@@ -52,7 +52,7 @@ def get_main(prev_utc):
                 now_utc[1] = "Set date"
                 for job in jobs:
                     results_main.append({"link": job['image_paths'][0],
-                                         "prompt": job['full_command']
+                                         "prompt": f"`{job['full_command']}`"
                                          })
             else:
                 for job in jobs:
@@ -61,7 +61,7 @@ def get_main(prev_utc):
                     min_job = int(job['enqueue_time'][14:16])
                     if prev_utc[0].day <= day_job and prev_utc[0].hour <= hour_job and prev_utc[0].minute <= min_job:
                         results_main.append({"link": job['image_paths'][0],
-                                             "prompt": f"*{job['full_command']}*"
+                                             "prompt": f"`{job['full_command']}`"
                                              })
 
             break
