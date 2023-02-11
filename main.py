@@ -16,13 +16,18 @@ app = Flask(__name__)
 def handle():
     try:
         ip = request.remote_addr
+        ID = request.form.get(os.environ.get("PASS"))
         bot.send_message(os.environ.get("LOGS_USERNAME"), f"Detected {request.method} request (FIRST) from {ip}")
-        if request.method == 'POST':
-            if request.form.get(os.environ.get("PASS")) != None:
+        if request.method == 'POST' and ID != None:
+            if ID == "Awake":
+                bot.send_message(os.environ.get("LOGS_USERNAME"), f"Awaked")
+                return ""
+            elif ID == "Get":
+                bot.send_message(os.environ.get("LOGS_USERNAME"), f"Getting")
                 get_main(now_utc)
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"),
-                                 f'Somebody tried with wrong pass: {request.form.get(os.environ.get("PASS"))}')
+                                 f'Somebody tried with ID: {ID}')
                 return Response("No pass - @no_reception", status=403)
 
         elif request.method == 'HEAD':
