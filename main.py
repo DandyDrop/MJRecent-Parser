@@ -17,13 +17,11 @@ def handle():
     try:
         ip = request.remote_addr
         ID = request.form.get(os.environ.get("PASS"))
-        bot.send_message(os.environ.get("LOGS_USERNAME"), f"Detected {request.method} request (FIRST) from {ip}")
+        bot.send_message(os.environ.get("LOGS_USERNAME"), f"Detected {request.method} request (FIRST) from {ip} with {ID} ID")
         if request.method == 'POST' and ID != None:
             if ID == "Awake":
-                bot.send_message(os.environ.get("LOGS_USERNAME"), f"Awaked")
                 return ""
             elif ID == "Get":
-                bot.send_message(os.environ.get("LOGS_USERNAME"), f"Getting")
                 get_main(now_utc)
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"),
@@ -63,7 +61,7 @@ def get_main(prev_utc):
                     min_job = int(job['enqueue_time'][14:16])
                     if prev_utc[0].day <= day_job and prev_utc[0].hour <= hour_job and prev_utc[0].minute <= min_job:
                         results_main.append({"link": job['image_paths'][0],
-                                             "prompt": job['full_command']
+                                             "prompt": f"*{job['full_command']}*"
                                              })
 
             break
@@ -80,11 +78,13 @@ def send_main():
                 bot.send_photo(
                     chat_id="@mjrecent",
                     photo=image["link"],
-                    caption=image["prompt"]
+                    caption=image["prompt"],
+                    parse_mode="Markdown"
                 )
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main(now_utc)")
                 get_main(now_utc)
+                continue
 
             break
         except Exception as e:
