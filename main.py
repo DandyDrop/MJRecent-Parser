@@ -22,7 +22,7 @@ def handle():
             if ID == "Awake":
                 return ""
             elif ID == "Get":
-                get_main(now_utc)
+                send_main()
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"),
                                  f'Somebody tried with ID: {ID}')
