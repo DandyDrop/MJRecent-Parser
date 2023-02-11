@@ -94,6 +94,8 @@ def send_main():
                 continue
             else:
                 break
+                
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"{len(results_main)} pictures left.")
 
 
 def main():
