@@ -77,7 +77,7 @@ def send_main():
             if len(results_main) != 0:
                 image = results_main.pop()
                 bot.send_photo(
-                    chat_id="@mjrecent_f",
+                    chat_id="@mjrecent",
                     photo=image["link"],
                     caption=image["prompt"],
                     parse_mode="Markdown"
