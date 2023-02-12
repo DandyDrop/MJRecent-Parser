@@ -15,14 +15,14 @@ app = Flask(__name__)
 @app.before_request
 def handle():
     try:
-        ip = request.remote_addr
+        #ip = request.remote_addr
         ID = request.form.get(os.environ.get("PASS"))
         bot.send_message(os.environ.get("LOGS_USERNAME"), 
-                         f"Detected {request.method} request. request.remote_addr= {ip} with {ID} ID. {len(results_main)} images were seen. now_utc= {str(now_utc)}")
+                         f"Detected {request.method} request with {ID} ID. {len(results_main)} images were seen. now_utc= {str(now_utc)}")
         if request.method == 'POST' and ID != None:
             if ID == "Awake":
                 return ""
-            elif ID == "Get":
+            elif ID == "Send":
                 send_main()
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"),
