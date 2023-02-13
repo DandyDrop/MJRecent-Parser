@@ -29,8 +29,8 @@ def handle():
                                  f'Somebody tried with ID: {ID}')
                 return Response("No pass - @no_reception", status=403)
 
-        elif request.method == 'HEAD':
-            send_main()
+        #elif request.method == 'HEAD':
+            #send_main()
 
     except Exception as e:
         e = str(e)
