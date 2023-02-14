@@ -1,13 +1,12 @@
 import os
 import json
-from datetime import datetime
 from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
 
-now_utc = [datetime.now().utcnow(), "No date"]
 results_main = []
+the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 
@@ -15,10 +14,9 @@ app = Flask(__name__)
 @app.before_request
 def handle():
     try:
-        #ip = request.remote_addr
         ID = request.form.get(os.environ.get("PASS"))
-        bot.send_message(os.environ.get("LOGS_USERNAME"), 
-                         f"Detected {request.method} request with {ID} ID. {len(results_main)} images were seen. now_utc= {str(now_utc)}")
+        bot.send_message(os.environ.get("LOGS_USERNAME"),
+                         f"Detected {request.method} request \nwith {ID} ID.\n {len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
         if request.method == 'POST' and ID != None:
             if ID == "Awake":
                 return ""
@@ -29,9 +27,6 @@ def handle():
                                  f'Somebody tried with ID: {ID}')
                 return Response("No pass - @no_reception", status=403)
 
-        #elif request.method == 'HEAD':
-            #send_main()
-
     except Exception as e:
         e = str(e)
         bot.send_message(os.environ.get("LOGS_USERNAME"), f"interesting error:\n{e}")
@@ -39,9 +34,7 @@ def handle():
     return ""
 
 
-def get_main(prev_utc):
-    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Before get_main time is\n{str(prev_utc)}")
-    results_main.clear()
+def get_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
@@ -49,26 +42,15 @@ def get_main(prev_utc):
         if script.get('id') != None:
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
-            if prev_utc[1] == "No date":
-                now_utc[1] = "Set date"
-                for job in jobs:
+            for job in jobs:
+                if job['image_paths'][0] not in the_bin:
                     results_main.append({"link": job['image_paths'][0],
                                          "prompt": f"`{job['full_command']}`"
                                          })
-            else:
-                for job in jobs:
-                    day_job = int(job['enqueue_time'][8:10])
-                    hour_job = int(job['enqueue_time'][11:13])
-                    min_job = int(job['enqueue_time'][14:16])
-                    if prev_utc[0].day <= day_job and prev_utc[0].hour <= hour_job and prev_utc[0].minute <= min_job:
-                        results_main.append({"link": job['image_paths'][0],
-                                             "prompt": f"`{job['full_command']}`"
-                                             })
 
             break
 
-    now_utc[0] = datetime.now().utcnow()
-    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Got {len(results_main)} new images!\n{now_utc[1]} {str(now_utc[0])}")
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Got {len(results_main)} new images!")
 
 
 def send_main():
@@ -76,15 +58,18 @@ def send_main():
         try:
             if len(results_main) != 0:
                 image = results_main.pop()
+                if len(the_bin) > 200:
+                    del the_bin[0]
+                the_bin.append(image["link"])
                 bot.send_photo(
-                    chat_id="@mjrecent",
+                    chat_id=os.environ.get("MAIN_CHAT"),
                     photo=image["link"],
                     caption=image["prompt"],
                     parse_mode="Markdown"
                 )
             else:
-                bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main(now_utc)")
-                get_main(now_utc)
+                bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main()")
+                get_main()
                 continue
 
             break
@@ -95,8 +80,9 @@ def send_main():
                 continue
             else:
                 break
-                
-    bot.send_message(os.environ.get("LOGS_USERNAME"), f"{len(results_main)} images left. now_utc= {str(now_utc)}")
+
+    bot.send_message(os.environ.get("LOGS_USERNAME"),
+                     f"{len(results_main)} left in results_main.\n{len(the_bin)} left in bin.")
 
 
 def main():
