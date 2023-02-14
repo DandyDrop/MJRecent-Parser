@@ -16,7 +16,7 @@ def handle():
     try:
         ID = request.form.get(os.environ.get("PASS"))
         bot.send_message(os.environ.get("LOGS_USERNAME"),
-                         f"Detected {request.method} request \nwith {ID} ID.\n {len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
+                         f"Detected {request.method} request \nwith {ID} ID.\n{len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
         if request.method == 'POST' and ID != None:
             if ID == "Awake":
                 return ""
@@ -45,7 +45,7 @@ def get_main():
             for job in jobs:
                 if job['image_paths'][0] not in the_bin:
                     results_main.append({"link": job['image_paths'][0],
-                                         "prompt": f"`{job['full_command']}`"
+                                         "prompt": job['full_command']
                                          })
 
             break
@@ -64,7 +64,7 @@ def send_main():
                 bot.send_photo(
                     chat_id=os.environ.get("MAIN_CHAT"),
                     photo=image["link"],
-                    caption=image["prompt"],
+                    caption=refactor_caption(image["prompt"]),
                     parse_mode="Markdown"
                 )
             else:
@@ -85,6 +85,23 @@ def send_main():
                      f"{len(results_main)} left in results_main.\n{len(the_bin)} left in bin.")
 
 
+def refactor_caption(caption):
+    links = ""
+    save = ""
+    while caption.find("<https://") != -1:
+        if caption.index("<https://") != 0:
+            save += caption[:caption.index("<https://") - 1]
+        caption = caption[caption.index("<https://")+9:]
+        links += caption[:caption.index(">")] + "\n"
+        caption = caption[caption.index(">")+1:]
+    final = save+caption
+    shit = [',', '-', '.', " "]
+    while final[0] in shit:
+        final = final[1:]
+
+    return f"{links}\n`{final}`"
+
+    
 def main():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
