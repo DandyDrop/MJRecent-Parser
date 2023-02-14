@@ -95,14 +95,9 @@ def refactor_caption(caption):
         links += caption[:caption.index(">")] + "\n"
         caption = caption[caption.index(">")+1:]
     final = save+caption
-    if ", " in final[:3]:
-        final = final[final.find(",") + 2:]
-    elif "," in final[:3]:
-        final = final[final.find(",") + 1:]
-    elif " " == final[0]:
+    shit = [',', '-', '.', " "]
+    while final[0] in shit:
         final = final[1:]
-    elif "  " == final[:2]:
-        final = final[2:]
 
     return f"{links}\n`{final}`"
 
