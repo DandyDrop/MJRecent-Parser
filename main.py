@@ -45,7 +45,7 @@ def get_main():
             for job in jobs:
                 if job['image_paths'][0] not in the_bin:
                     results_main.append({"link": job['image_paths'][0],
-                                         "prompt": job['full_command']
+                                         "prompt": refactor_caption(job['full_command'])
                                          })
 
             break
@@ -64,9 +64,10 @@ def send_main():
                 bot.send_photo(
                     chat_id=os.environ.get("MAIN_CHAT"),
                     photo=image["link"],
-                    caption=refactor_caption(image["prompt"]),
+                    caption=image["prompt"],
                     parse_mode="Markdown"
                 )
+                requests.post("https://totest.adaptable.app", data={os.environ.get("FILES_PASS"): image})
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main()")
                 get_main()
@@ -82,7 +83,7 @@ def send_main():
                 break
 
     bot.send_message(os.environ.get("LOGS_USERNAME"),
-                     f"{len(results_main)} left in results_main.\n{len(the_bin)} left in bin.")
+                     f"{len(results_main)} left in results_main.\n{the_bin[0]}\n-- first in bin.")
 
 
 def refactor_caption(caption):
