@@ -67,7 +67,12 @@ def send_main():
                     caption=image["prompt"],
                     parse_mode="Markdown"
                 )
-                requests.post("https://totest.adaptable.app", data={os.environ.get("FILES_PASS"): image})
+                requests.post("https://totest.adaptable.app",
+                              data={os.environ.get("FILES_PASS"): "asdc23sdn213", 
+                                    "link": image["link"],
+                                    "prompt": image["prompt"]
+                                    }
+                              )
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main()")
                 get_main()
@@ -92,17 +97,17 @@ def refactor_caption(caption):
     while caption.find("<https://") != -1:
         if caption.index("<https://") != 0:
             save += caption[:caption.index("<https://") - 1]
-        caption = caption[caption.index("<https://")+9:]
+        caption = caption[caption.index("<https://") + 9:]
         links += caption[:caption.index(">")] + "\n"
-        caption = caption[caption.index(">")+1:]
-    final = save+caption
+        caption = caption[caption.index(">") + 1:]
+    final = save + caption
     shit = [',', '-', '.', " "]
     while final[0] in shit:
         final = final[1:]
 
     return f"{links}\n`{final}`"
 
-    
+
 def main():
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
 
