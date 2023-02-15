@@ -88,7 +88,7 @@ def send_main():
                 break
 
     bot.send_message(os.environ.get("LOGS_USERNAME"),
-                     f"{len(results_main)} left in results_main.\n{the_bin[0]}\n-- first in bin.")
+                     f"{len(results_main)} left in results_main.\n{the_bin[0][27:-8]}\n-- first in bin.")
 
 
 def refactor_caption(caption):
