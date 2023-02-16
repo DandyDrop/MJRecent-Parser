@@ -7,7 +7,7 @@ import telebot
 from telebot import types
 
 USERNAMES = ["@", "@", "@"]
-ADMIN_USERNAMES = []
+ADMIN_IDS = ["652015662"]
 results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
@@ -54,7 +54,7 @@ def handle_admin():
 def change_main_username(m):
     bot.send_message(os.environ.get("LOGS_USERNAME"),
                      f"Detected message with change_main_username command\nfrom:\nid={m.chat.id}\n{type(m.chat.id)}")
-    if m.chat.id in ADMIN_USERNAMES:
+    if m.chat.id in ADMIN_IDS:
         for i, com in enumerate(commands):
             if com == m.text[1:21]:
                 change_usernames(m.text[22:], i)
