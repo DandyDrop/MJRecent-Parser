@@ -54,7 +54,7 @@ def handle_admin():
 def change_main_username(m):
     try:
         bot.send_message(os.environ.get("LOGS_USERNAME"),
-                         f"Detected message with change_main_username command\nfrom:\nid={m.chat.id}\n{type(m.chat.id)}")
+                         f"Detected message with some user changing command\nfrom:\nid={m.chat.id}")
         if m.chat.id in ADMIN_IDS:
             for i, com in enumerate(username_commands):
                 if com == m.text[1:21]:
@@ -66,9 +66,9 @@ def change_main_username(m):
 
 
 def change_usernames(username, pointer):
-    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Before changing main user=\n{USERNAMES[pointer]}")
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Before changing user=\n{USERNAMES[pointer]}")
     USERNAMES[pointer] = username
-    bot.send_message(os.environ.get("LOGS_USERNAME"), f"After changing main user=\n{USERNAMES[pointer]}")
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"After changing user=\n{USERNAMES[pointer]}")
 
 
 def get_main():
@@ -114,19 +114,21 @@ def send_main():
                                   "user": USERNAMES[1]
                                     }
                               )
-                break
+                bot.send_message(os.environ.get("LOGS_USERNAME"),
+                     f"{len(results_main)} left in results_main.\n{the_bin[0][27:-8]}\n-- first in bin.")
+                
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main()")
                 get_main()
+                continue
+                
+            break
 
         except Exception as e:
             e = str(e)
             bot.send_message(os.environ.get("LOGS_USERNAME"), f"error:\n{e}")
             if "Bad Request" not in e:
                 break
-
-    bot.send_message(os.environ.get("LOGS_USERNAME"),
-                     f"{len(results_main)} left in results_main.\n{the_bin[0][27:-8]}\n-- first in bin.")
 
 
 def refactor_caption(caption):
