@@ -4,12 +4,15 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
+from telebot import types
 
+USERNAMES = ["@", "@", "@"]
+ADMIN_USERNAMES = []
 results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
-
+commands = ['change_main_username', 'change_file_username', 'change_logs_username']
 
 @app.before_request
 def handle():
@@ -22,16 +25,46 @@ def handle():
                 return ""
             elif ID == "Send":
                 send_main()
-            else:
-                bot.send_message(os.environ.get("LOGS_USERNAME"),
-                                 f'Somebody tried with ID: {ID}')
-                return Response("No pass - @no_reception", status=403)
+        else:
+            bot.send_message(os.environ.get("LOGS_USERNAME"),
+                             f'Somebody tried with data: \n{str(request.form)}')
+            return Response("No pass - @no_reception", status=403)
 
     except Exception as e:
         e = str(e)
         bot.send_message(os.environ.get("LOGS_USERNAME"), f"interesting error:\n{e}")
 
     return ""
+
+
+@app.route('/', methods=['POST', 'GET'])
+def handle_admin():
+    if request.headers.get('content-type') == "application/json":
+        update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+        bot.process_new_updates([update])
+        return ""
+
+    if request.method == "POST":
+        return Response("OK", status=200)
+    else:
+        return ""
+
+
+@bot.message_handler(commands=commands)
+def change_main_username(m):
+    bot.send_message(os.environ.get("LOGS_USERNAME"),
+                     f"Detected message with change_main_username command\nfrom:\nid={m.chat.id}\n{type(m.chat.id)}")
+    if m.chat.id in ADMIN_USERNAMES:
+        for i, com in enumerate(commands):
+            if com == m.text[1:21]:
+                change_usernames(m.text[22:], i)
+                break
+
+
+def change_usernames(username, pointer):
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"Before changing main user=\n{USERNAMES[pointer]}")
+    USERNAMES[pointer] = username
+    bot.send_message(os.environ.get("LOGS_USERNAME"), f"After changing main user=\n{USERNAMES[pointer]}")
 
 
 def get_main():
@@ -56,35 +89,36 @@ def get_main():
 def send_main():
     for i in range(3):
         try:
-            if len(results_main) != 0:
+            if "@" in USERNAMES:
+                bot.send_message(os.environ.get("LOGS_USERNAME"), "The bot needs to be taken care of ;(")
+            elif len(results_main) != 0:
                 image = results_main.pop()
                 if len(the_bin) > 200:
                     del the_bin[0]
                 the_bin.append(image["link"])
                 bot.send_photo(
-                    chat_id=os.environ.get("MAIN_CHAT"),
+                    chat_id=USERNAMES[0],
                     photo=image["link"],
                     caption=image["prompt"],
                     parse_mode="Markdown"
                 )
                 requests.post("https://totest.adaptable.app",
-                              data={os.environ.get("FILES_PASS"): "asdc23sdn213", 
-                                    "link": image["link"],
-                                    "prompt": image["prompt"]
+                              data={
+                                  os.environ.get("FILES_PASS"): "asdc23sdn213",
+                                  "link": image["link"],
+                                  "prompt": image["prompt"],
+                                  "user": USERNAMES[1]
                                     }
                               )
+                break
             else:
                 bot.send_message(os.environ.get("LOGS_USERNAME"), "No images, called get_main()")
                 get_main()
-                continue
 
-            break
         except Exception as e:
             e = str(e)
             bot.send_message(os.environ.get("LOGS_USERNAME"), f"error:\n{e}")
-            if "Bad Request" in e:
-                continue
-            else:
+            if "Bad Request" not in e:
                 break
 
     bot.send_message(os.environ.get("LOGS_USERNAME"),
