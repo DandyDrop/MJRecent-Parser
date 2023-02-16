@@ -12,24 +12,24 @@ results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
-commands = ['change_main_username', 'change_file_username', 'change_logs_username']
+username_commands = ['change_main_username', 'change_file_username', 'change_logs_username']
 
 @app.before_request
 def handle():
     try:
-        if request.headers.get('content-type') != "application/json":
-            ID = request.form.get(os.environ.get("PASS"))
-            bot.send_message(os.environ.get("LOGS_USERNAME"),
-                             f"Detected {request.method} request \nwith {ID} ID.\n{len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
-            if request.method == 'POST' and ID != None:
-                if ID == "Awake":
-                    return ""
-                elif ID == "Send":
-                    send_main()
-            else:
-                bot.send_message(os.environ.get("LOGS_USERNAME"),
-                                 f'Somebody tried with data: \n{str(request.form)}')
-                return Response("No pass - @no_reception", status=403)
+#         if request.headers.get('content-type') != "application/json":
+        ID = request.form.get(os.environ.get("PASS"))
+        bot.send_message(os.environ.get("LOGS_USERNAME"),
+                         f"Detected {request.method} request \nwith {ID} ID.\n{len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
+        if request.method == 'POST' and ID != None:
+            if ID == "Awake":
+                return ""
+            elif ID == "Send":
+                send_main()
+#             else:
+#                 bot.send_message(os.environ.get("LOGS_USERNAME"),
+#                                  f'Somebody tried with data: \n{str(request.form)}')
+#                 return Response("No pass - @no_reception", status=403)
 
     except Exception as e:
         e = str(e)
@@ -49,15 +49,19 @@ def handle_admin():
         return ""
 
 
-@bot.message_handler(commands=commands)
+@bot.message_handler(commands=username_commands)
 def change_main_username(m):
-    bot.send_message(os.environ.get("LOGS_USERNAME"),
-                     f"Detected message with change_main_username command\nfrom:\nid={m.chat.id}\n{type(m.chat.id)}")
-    if m.chat.id in ADMIN_IDS:
-        for i, com in enumerate(commands):
-            if com == m.text[1:21]:
-                change_usernames(m.text[22:], i)
-                break
+    try:
+        bot.send_message(os.environ.get("LOGS_USERNAME"),
+                         f"Detected message with change_main_username command\nfrom:\nid={m.chat.id}\n{type(m.chat.id)}")
+        if m.chat.id in ADMIN_IDS:
+            for i, com in enumerate(username_commands):
+                if com == m.text[1:21]:
+                    change_usernames(m.text[22:], i)
+                    break
+    except Exception as e:
+        e = str(e)
+        bot.send_message(os.environ.get("LOGS_USERNAME"), f"interesting error:\n{e}")                
 
 
 def change_usernames(username, pointer):
