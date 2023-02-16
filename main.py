@@ -17,18 +17,19 @@ commands = ['change_main_username', 'change_file_username', 'change_logs_usernam
 @app.before_request
 def handle():
     try:
-        ID = request.form.get(os.environ.get("PASS"))
-        bot.send_message(os.environ.get("LOGS_USERNAME"),
-                         f"Detected {request.method} request \nwith {ID} ID.\n{len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
-        if request.method == 'POST' and ID != None:
-            if ID == "Awake":
-                return ""
-            elif ID == "Send":
-                send_main()
-        else:
+        if request.headers.get('content-type') != "application/json":
+            ID = request.form.get(os.environ.get("PASS"))
             bot.send_message(os.environ.get("LOGS_USERNAME"),
-                             f'Somebody tried with data: \n{str(request.form)}')
-            return Response("No pass - @no_reception", status=403)
+                             f"Detected {request.method} request \nwith {ID} ID.\n{len(results_main)} were seen in results_main.\n{len(the_bin)} were seen in bin")
+            if request.method == 'POST' and ID != None:
+                if ID == "Awake":
+                    return ""
+                elif ID == "Send":
+                    send_main()
+            else:
+                bot.send_message(os.environ.get("LOGS_USERNAME"),
+                                 f'Somebody tried with data: \n{str(request.form)}')
+                return Response("No pass - @no_reception", status=403)
 
     except Exception as e:
         e = str(e)
