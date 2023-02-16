@@ -7,7 +7,7 @@ import telebot
 from telebot import types
 
 USERNAMES = ["@", "@", "@"]
-ADMIN_IDS = ["652015662"]
+ADMIN_IDS = [652015662]
 results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
@@ -33,8 +33,6 @@ def handle():
     except Exception as e:
         e = str(e)
         bot.send_message(os.environ.get("LOGS_USERNAME"), f"interesting error:\n{e}")
-
-    return ""
 
 
 @app.route('/', methods=['POST', 'GET'])
