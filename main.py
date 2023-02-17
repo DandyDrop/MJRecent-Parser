@@ -8,9 +8,8 @@ import telebot
 USERNAMES = ["@", "@", os.environ.get("LOGS_USERNAME"), "@"]
 ADMIN_IDS = [652015662]
 PASSWORDS = [os.environ.get("MAIN_REQUEST_PASS"),
-             os.environ.get("SEND_TO_SECOND_PASS"),
-             os.environ.get("TO_RENEW_PASSC"),
-             os.environ.get("TO_SEND_PASSC")]
+             os.environ.get("SEND_TO_SECOND_PASS")
+             ]
 results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
@@ -46,6 +45,18 @@ def handle():
 def handle_admin():
     if request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+        bot.send_message('652015662',
+                         f'{type(update)}')
+        bot.send_message('652015662',
+                         f'{update}')
+        bot.send_message('652015662',
+                         f'{type(request.form)}')
+        bot.send_message('652015662',
+                         f'{request.form}')
+        bot.send_message('652015662',
+                         f'{type(request.stream.read().decode("utf-8"))}')
+        bot.send_message('652015662',
+                         f'{request.stream.read().decode("utf-8")}')
         bot.process_new_updates([update])
         return ""
 
@@ -60,7 +71,7 @@ def send_all_in_bin(m):
     bot.send_message(USERNAMES[2],
                      f'Detected message with "show_bin" command\nfrom:\nid={m.chat.id}')
     if m.chat.id in ADMIN_IDS:
-        command = m.text[1:m.text.index(" ")]
+        command = m.text[1:]
         all_str = ""
         if command == 'show_bin':
             for link in the_bin:
@@ -87,7 +98,16 @@ def change_main_username(m):
                 break
 
 
-@bot.message_handler(commands=[PASSWORDS[2]])
+@bot.message_handler(commands=['renew'])
+def get_main_from_admin(m):
+    if m.chat.id in ADMIN_IDS:
+        get_main()
+        
+@bot.message_handler(commands=['send'])
+def get_main_from_admin(m):
+    if m.chat.id in ADMIN_IDS:
+        send_main()
+
 def get_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
