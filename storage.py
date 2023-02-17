@@ -141,3 +141,28 @@ def send_main():
     bot.send_message(os.environ.get("LOGS_USERNAME"), f"{len(results_main)} images left. now_utc= {str(now_utc)}")
 +++ version(14.02.23 9:56)
 
+
+         
+        #         bot.send_message('652015662',
+        #                          f'{type(update)}')
+        #         try:
+        #             up = dict(update)
+        #             bot.send_message('652015662',
+        #                          f'{type(up)}')
+        #             bot.send_message('652015662',
+        #                          f'{up}')
+        #             bot.send_message('652015662',
+        #                          f'{up.chat.id}')
+        #         except Exception as e:
+        #             bot.send_message('652015662',
+        #                          f'{str(e)}')
+        #         bot.send_message('652015662',
+        #                          f'{update}')
+        #         bot.send_message('652015662',
+        #                          f'{type(request.form)}')
+        #         bot.send_message('652015662',
+        #                          f'{request.form}')
+        
+        
+        
+
