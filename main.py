@@ -45,13 +45,13 @@ def handle():
 def handle_admin():
     if request.headers.get('content-type') == "application/json":
         try:
-            reco = request.get_json()
+            reco = dict(request.get_json())
             bot.send_message('652015662',
                          f'{type(reco)}')
             bot.send_message('652015662',
                              f'{str(reco)}')
             bot.send_message('652015662',
-                         f'{reco["chat"]["id"]}')
+                         f'{reco["update_id"]}')
             reco = request.get_json()
             if reco['chat']['id'] in ADMIN_IDS:
                 update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
