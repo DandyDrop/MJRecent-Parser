@@ -57,7 +57,7 @@ def send_all_in_bin(m):
     if m.chat.id in ADMIN_IDS:
         all_in_bin_str = ""
         for link in the_bin:
-            all_in_bin_str += f"{link[8:]}\n"
+            all_in_bin_str += f"{link[8:]}\n\n"
         bot.send_message(m.chat.id, all_in_bin_str)  
     
     
@@ -68,14 +68,14 @@ def change_main_username(m):
     if m.chat.id in ADMIN_IDS:
         for i, com in enumerate(username_commands):
             if com == m.text[1:21]:
-                change_usernames(m.text[22:], i)
+                bot.send_message(USERNAMES[2], f"Before changing USERNAMES=\n{USERNAMES}")
+                USERNAMES[i] = m.text[22:]
+                bot.send_message(USERNAMES[2], f"After changing USERNAMES=\n{USERNAMES}")
                 break               
 
 
-def change_usernames(username, pointer):
-    bot.send_message(USERNAMES[2], f"Before changing user=\n{USERNAMES[pointer]}")
-    USERNAMES[pointer] = username
-    bot.send_message(USERNAMES[2], f"After changing user=\n{USERNAMES[pointer]}")
+# def change_usernames(username, pointer):
+    
 
 
 def get_main():
