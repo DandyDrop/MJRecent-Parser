@@ -52,15 +52,14 @@ def handle_admin():
             bot.send_message('652015662',
                          f'{str(request.get_json()['chat']['id'])}')
             if request.get_json()['chat']['id'] in ADMIN_IDS:
+                update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
                 bot.process_new_updates([update])
                 
         except Exception as e:
             bot.send_message('652015662',
                          f'{str(e)}')
             return ""
-        update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
-        bot.process_new_updates([update])
-        return ""
+         
         #         bot.send_message('652015662',
         #                          f'{type(update)}')
         #         try:
