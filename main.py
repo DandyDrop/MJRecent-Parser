@@ -45,26 +45,38 @@ def handle():
 def handle_admin():
     if request.headers.get('content-type') == "application/json":
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
-        bot.send_message('652015662',
-                         f'{type(update)}')
+        #         bot.send_message('652015662',
+        #                          f'{type(update)}')
+        #         try:
+        #             up = dict(update)
+        #             bot.send_message('652015662',
+        #                          f'{type(up)}')
+        #             bot.send_message('652015662',
+        #                          f'{up}')
+        #             bot.send_message('652015662',
+        #                          f'{up.chat.id}')
+        #         except Exception as e:
+        #             bot.send_message('652015662',
+        #                          f'{str(e)}')
+        #         bot.send_message('652015662',
+        #                          f'{update}')
+        #         bot.send_message('652015662',
+        #                          f'{type(request.form)}')
+        #         bot.send_message('652015662',
+        #                          f'{request.form}')
         try:
-            up = dict(update)
             bot.send_message('652015662',
-                         f'{type(up)}')
+                         f'{type(request.get_json())}')
             bot.send_message('652015662',
-                         f'{up}')
+                             f'{str(request.get_json())}')
             bot.send_message('652015662',
-                         f'{up.chat.id}')
+                         f'{str(request.get_json().chat.id)}')
         except Exception as e:
             bot.send_message('652015662',
                          f'{str(e)}')
-        bot.send_message('652015662',
-                         f'{update}')
-        bot.send_message('652015662',
-                         f'{type(request.form)}')
-        bot.send_message('652015662',
-                         f'{request.form}')
-        bot.process_new_updates([update])
+            
+        if request.get_json().chat.id in ADMIN_IDS:
+            bot.process_new_updates([update])
         return ""
 
     if request.method == "POST":
@@ -100,7 +112,7 @@ def change_main_username(m):
         for i, com in enumerate(username_commands):
             if com == m.text[1:m.text.index(" ")]:
                 bot.send_message(USERNAMES[2], f"Before changing USERNAMES=\n{USERNAMES}")
-                USERNAMES[i] = m.text[m.text.index(" ")+1:]
+                USERNAMES[i] = m.text[m.text.index(" ") + 1:]
                 bot.send_message(USERNAMES[2], f"Now USERNAMES=\n{USERNAMES}")
                 break
 
@@ -109,11 +121,13 @@ def change_main_username(m):
 def get_main_from_admin(m):
     if m.chat.id in ADMIN_IDS:
         get_main()
-        
+
+
 @bot.message_handler(commands=['send'])
 def get_main_from_admin(m):
     if m.chat.id in ADMIN_IDS:
         send_main()
+
 
 def get_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
