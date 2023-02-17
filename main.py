@@ -64,10 +64,6 @@ def handle_admin():
                          f'{type(request.form)}')
         bot.send_message('652015662',
                          f'{request.form}')
-        bot.send_message('652015662',
-                         f'{type(request.stream.read().decode("utf-8"))}')
-        bot.send_message('652015662',
-                         f'{str(request.stream.read().decode("utf-8"))}')
         bot.process_new_updates([update])
         return ""
 
