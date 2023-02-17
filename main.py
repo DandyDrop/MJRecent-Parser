@@ -46,7 +46,7 @@ def handle_admin():
     if request.headers.get('content-type') == "application/json":
         try:
             update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
-            if update.message.from_user.id in ADMINS_IDS:
+            if update.message.from_user.id in ADMIN_IDS:
                 bot.process_new_updates([update])
             return ""
                 
@@ -65,47 +65,34 @@ def handle_admin():
 def send_all_in_bin(m):
     bot.send_message(USERNAMES[2],
                      f'Detected message with "show_bin" command\nfrom:\nid={m.chat.id}')
-    if m.chat.id in ADMIN_IDS:
-        command = m.text[1:]
-        all_str = ""
-        if command == 'show_bin':
-            for link in the_bin:
-                all_str += f"{link[8:]}\n\n"
-        elif command == 'show_main':
-            for image in results_main:
-                all_str += f'{image["link"][8:]}\n'
-        elif command == 'show_pass':
-            for password in PASSWORDS:
-                all_str += f'`{password}`\n'
-        bot.send_message(m.chat.id, all_str, parse_mode='Markdown')
+    command = m.text[1:]
+    all_str = ""
+    if command == 'show_bin':
+        for link in the_bin:
+            all_str += f"{link[8:]}\n\n"
+    elif command == 'show_main':
+        for image in results_main:
+            all_str += f'{image["link"][8:]}\n'
+    elif command == 'show_pass':
+        for password in PASSWORDS:
+            all_str += f'`{password}`\n'
+    bot.send_message(m.chat.id, all_str, parse_mode='Markdown')
 
 
 @bot.message_handler(commands=username_commands)
 def change_main_username(m):
     bot.send_message(USERNAMES[2],
                      f"Detected message with some user changing command\nfrom:\nid={m.chat.id}")
-    if m.chat.id in ADMIN_IDS:
-        for i, com in enumerate(username_commands):
-            if com == m.text[1:m.text.index(" ")]:
-                bot.send_message(USERNAMES[2], f"Before changing USERNAMES=\n{USERNAMES}")
-                USERNAMES[i] = m.text[m.text.index(" ") + 1:]
-                bot.send_message(USERNAMES[2], f"Now USERNAMES=\n{USERNAMES}")
-                break
+    for i, com in enumerate(username_commands):
+        if com == m.text[1:m.text.index(" ")]:
+            bot.send_message(USERNAMES[2], f"Before changing USERNAMES=\n{USERNAMES}")
+            USERNAMES[i] = m.text[m.text.index(" ") + 1:]
+            bot.send_message(USERNAMES[2], f"Now USERNAMES=\n{USERNAMES}")
+            break
 
 
 @bot.message_handler(commands=['renew'])
-def get_main_from_admin(m):
-    if m.chat.id in ADMIN_IDS:
-        get_main()
-
-
-@bot.message_handler(commands=['send'])
-def get_main_from_admin(m):
-    if m.chat.id in ADMIN_IDS:
-        send_main()
-
-
-def get_main():
+def get_main(m):
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
@@ -123,7 +110,8 @@ def get_main():
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
-def send_main():
+@bot.message_handler(commands=['send'])
+def send_main(m):
     for i in range(3):
         try:
             if "@" in USERNAMES:
