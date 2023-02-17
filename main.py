@@ -126,7 +126,6 @@ def get_main():
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
-@bot.message_handler(commands=[PASSWORDS[3]])
 def send_main():
     for i in range(3):
         try:
