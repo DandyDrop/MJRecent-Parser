@@ -44,7 +44,20 @@ def handle():
 @app.route('/', methods=['POST', 'GET'])
 def handle_admin():
     if request.headers.get('content-type') == "application/json":
+        try:
+            bot.send_message('652015662',
+                         f'{type(request.get_json())}')
+            bot.send_message('652015662',
+                             f'{str(request.get_json())}')
+            bot.send_message('652015662',
+                         f'{str(request.get_json().chat.id)}')
+            if request.get_json().chat.id in ADMIN_IDS:
+                bot.process_new_updates([update])
+        except Exception as e:
+            bot.send_message('652015662',
+                         f'{str(e)}')
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+        bot.process_new_updates([update])
         #         bot.send_message('652015662',
         #                          f'{type(update)}')
         #         try:
@@ -64,18 +77,7 @@ def handle_admin():
         #                          f'{type(request.form)}')
         #         bot.send_message('652015662',
         #                          f'{request.form}')
-        try:
-            bot.send_message('652015662',
-                         f'{type(request.get_json())}')
-            bot.send_message('652015662',
-                             f'{str(request.get_json())}')
-            bot.send_message('652015662',
-                         f'{str(request.get_json().chat.id)}')
-            if request.get_json().chat.id in ADMIN_IDS:
-                bot.process_new_updates([update])
-        except Exception as e:
-            bot.send_message('652015662',
-                         f'{str(e)}')
+        
           
         return ""
 
