@@ -45,43 +45,15 @@ def handle():
 def handle_admin():
     if request.headers.get('content-type') == "application/json":
         try:
-            reco = dict(request.get_json())
-            bot.send_message('652015662',
-                         f'{type(reco)}')
-            bot.send_message('652015662',
-                             f'{str(reco)}')
-            bot.send_message('652015662',
-                         f'{reco["update_id"]}')
-            reco = request.get_json()
-            if reco['chat']['id'] in ADMIN_IDS:
-                update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+            update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
+            if update.message.from_user.id in ADMINS_IDS:
                 bot.process_new_updates([update])
+            return ""
                 
         except Exception as e:
             bot.send_message('652015662',
                          f'{str(e)}')
             return ""
-         
-        #         bot.send_message('652015662',
-        #                          f'{type(update)}')
-        #         try:
-        #             up = dict(update)
-        #             bot.send_message('652015662',
-        #                          f'{type(up)}')
-        #             bot.send_message('652015662',
-        #                          f'{up}')
-        #             bot.send_message('652015662',
-        #                          f'{up.chat.id}')
-        #         except Exception as e:
-        #             bot.send_message('652015662',
-        #                          f'{str(e)}')
-        #         bot.send_message('652015662',
-        #                          f'{update}')
-        #         bot.send_message('652015662',
-        #                          f'{type(request.form)}')
-        #         bot.send_message('652015662',
-        #                          f'{request.form}')
-        
 
     if request.method == "POST":
         return Response("OK", status=200)
