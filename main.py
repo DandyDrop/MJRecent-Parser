@@ -96,7 +96,8 @@ def get_main(m):
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
-    for script in scripts:
+    try:
+      for script in scripts:
         if script.get('id') != None:
             data = json.loads(script.text)
             jobs = data['props']['pageProps']['jobs']
@@ -106,7 +107,13 @@ def get_main(m):
                                          "prompt": refactor_caption(job['full_command'])
                                          })
             break
-
+    except Exception as e:
+      bot.send_message(USERNAMES[2],
+                      f"Got the error in get_main:\n{str(e)}\n")
+      bot.send_message(USERNAMES[2],
+                      f"First 2000 symbols of soup:\n{str(soup)[:2000]}")
+      bot.send_message(USERNAMES[2],
+                      f"scripts=:\n{str(scripts)}")
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
