@@ -47,6 +47,17 @@ def handle_admin():
         update = telebot.types.Update.de_json(request.stream.read().decode("utf-8"))
         bot.send_message('652015662',
                          f'{type(update)}')
+        try:
+            up = dict(update)
+            bot.send_message('652015662',
+                         f'{type(up)}')
+            bot.send_message('652015662',
+                         f'{up}')
+            bot.send_message('652015662',
+                         f'{up.chat.id}')
+        except Exception as e:
+            bot.send_message('652015662',
+                         f'{str(e)}')
         bot.send_message('652015662',
                          f'{update}')
         bot.send_message('652015662',
@@ -56,7 +67,7 @@ def handle_admin():
         bot.send_message('652015662',
                          f'{type(request.stream.read().decode("utf-8"))}')
         bot.send_message('652015662',
-                         f'{request.stream.read().decode("utf-8")}')
+                         f'{str(request.stream.read().decode("utf-8"))}')
         bot.process_new_updates([update])
         return ""
 
