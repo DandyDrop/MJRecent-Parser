@@ -7,17 +7,22 @@ import telebot
 
 USERNAMES = ["@", "@", os.environ.get("LOGS_USERNAME"), "@"]
 ADMIN_IDS = [652015662]
+PASSWORDS = [os.environ.get("MAIN_REQUEST_PASS"),
+             os.environ.get("SEND_TO_SECOND_PASS"),
+             os.environ.get("TO_RENEW_PASSC"),
+             os.environ.get("TO_SEND_PASSC")]
 results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
 app = Flask(__name__)
 username_commands = ['change_main_username', 'change_file_username', 'change_logs_username', 'change_onem_username']
 
+
 @app.before_request
 def handle():
     try:
         if request.headers.get('content-type') != "application/json":
-            ID = request.form.get(os.environ.get("PASS"))
+            ID = request.form.get(PASSWORDS[0])
             bot.send_message(USERNAMES[2],
                              f"Detected {request.method} request \nwith {ID} ID."
                              f"\n{len(results_main)} were seen in results_main.\n{len(the_bin)} "
@@ -50,34 +55,39 @@ def handle_admin():
         return ""
 
 
-@bot.message_handler(commands=['show_bin'])
+@bot.message_handler(commands=['show_bin', 'show_main', 'show_pass'])
 def send_all_in_bin(m):
     bot.send_message(USERNAMES[2],
                      f'Detected message with "show_bin" command\nfrom:\nid={m.chat.id}')
     if m.chat.id in ADMIN_IDS:
-        all_in_bin_str = ""
-        for link in the_bin:
-            all_in_bin_str += f"{link[8:]}\n\n"
-        bot.send_message(m.chat.id, all_in_bin_str)  
-    
-    
+        command = m.text[1:m.text.index(" ")]
+        all_str = ""
+        if command == 'show_bin':
+            for link in the_bin:
+                all_str += f"{link[8:]}\n\n"
+        elif command == 'show_main':
+            for image in results_main:
+                all_str += f'{image["link"][8:]}\n'
+        elif command == 'show_pass':
+            for password in PASSWORDS:
+                all_str += f'`{password}`\n'
+        bot.send_message(m.chat.id, all_str, parse_mode='Markdown')
+
+
 @bot.message_handler(commands=username_commands)
 def change_main_username(m):
     bot.send_message(USERNAMES[2],
                      f"Detected message with some user changing command\nfrom:\nid={m.chat.id}")
     if m.chat.id in ADMIN_IDS:
         for i, com in enumerate(username_commands):
-            if com == m.text[1:21]:
+            if com == m.text[1:m.text.index(" ")]:
                 bot.send_message(USERNAMES[2], f"Before changing USERNAMES=\n{USERNAMES}")
-                USERNAMES[i] = m.text[22:]
-                bot.send_message(USERNAMES[2], f"After changing USERNAMES=\n{USERNAMES}")
-                break               
+                USERNAMES[i] = m.text[m.text.index(" ")+1:]
+                bot.send_message(USERNAMES[2], f"Now USERNAMES=\n{USERNAMES}")
+                break
 
 
-# def change_usernames(username, pointer):
-    
-
-
+@bot.message_handler(commands=[PASSWORDS[2]])
 def get_main():
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -91,12 +101,12 @@ def get_main():
                     results_main.append({"link": job['image_paths'][0],
                                          "prompt": refactor_caption(job['full_command'])
                                          })
-
             break
 
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
+@bot.message_handler(commands=[PASSWORDS[3]])
 def send_main():
     for i in range(3):
         try:
@@ -121,21 +131,21 @@ def send_main():
                 the_bin.append(image["link"])
                 requests.post("https://totest.adaptable.app",
                               data={
-                                  os.environ.get("FILES_PASS"): "asdc23sdn213",
+                                  PASSWORDS[1]: "asdc23sdn213",
                                   "link": image["link"],
                                   "prompt": image["prompt"],
                                   "user": USERNAMES[1]
-                                    }
+                              }
                               )
                 bot.send_message(USERNAMES[2],
-                     f"{len(results_main)} left in results_main.\n{the_bin[0][27:-8]}\n-- first in bin.")
-                
+                                 f"{len(results_main)} left in results_main.\n{the_bin[0][27:-8]}\n-- first in bin.")
+
             else:
                 if i == 0:
                     bot.send_message(USERNAMES[2], "No images, called get_main()")
                 get_main()
                 continue
-                
+
             break
 
         except Exception as e:
@@ -168,3 +178,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
