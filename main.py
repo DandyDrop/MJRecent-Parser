@@ -30,7 +30,7 @@ def handle():
                 if ID == "Awake":
                     return ""
                 elif ID == "Send":
-                    send_main()
+                    send_main(m="pass")
             else:
                 bot.send_message(USERNAMES[2],
                                  f'Somebody tried with data: \n{str(request.form)}')
@@ -146,8 +146,8 @@ def send_main(m):
 
             else:
                 if i == 0:
-                    bot.send_message(USERNAMES[2], "No images, called get_main()")
-                get_main()
+                    bot.send_message(USERNAMES[2], 'No images, called get_main(m="pass")')
+                get_main(m="pass")
                 continue
 
             break
