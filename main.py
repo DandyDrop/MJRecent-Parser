@@ -71,12 +71,12 @@ def handle_admin():
                              f'{str(request.get_json())}')
             bot.send_message('652015662',
                          f'{str(request.get_json().chat.id)}')
+            if request.get_json().chat.id in ADMIN_IDS:
+                bot.process_new_updates([update])
         except Exception as e:
             bot.send_message('652015662',
                          f'{str(e)}')
-            
-        if request.get_json().chat.id in ADMIN_IDS:
-            bot.process_new_updates([update])
+          
         return ""
 
     if request.method == "POST":
