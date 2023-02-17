@@ -72,11 +72,11 @@ def send_all_in_bin(m):
             all_str += f"{link[8:]}\n\n"
     elif command == 'show_main':
         for image in results_main:
-            all_str += f'{image["link"][8:]}\n'
+            all_str += f'{image["link"]}\n'
     elif command == 'show_pass':
         for password in PASSWORDS:
-            all_str += f'`{password}`\n'
-    bot.send_message(m.chat.id, all_str, parse_mode='Markdown')
+            all_str += f'{password}\n'
+    bot.send_message(m.chat.id, all_str)
 
 
 @bot.message_handler(commands=username_commands)
