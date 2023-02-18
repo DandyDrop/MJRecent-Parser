@@ -106,8 +106,9 @@ def get_main(m):
                 jobs = data['props']['pageProps']['jobs']
                 for job in jobs:
                     if job['image_paths'][0] not in the_bin:
-                        results_main.append({"link": sh.tinyurl.short(job['image_paths'][0]),
-                                             "prompt": refactor_caption(job['full_command'], job['image_paths'][0])
+                        url_sh = sh.tinyurl.short(job['image_paths'][0]) 
+                        results_main.append({"link": url_sh,
+                                             "prompt": f"{refactor_caption(job['full_command'])}\n\nUse this image as reference:\n{url_sh[8:]}"
                                              })
                 break
     except Exception as e:
@@ -165,7 +166,7 @@ def send_main(m):
                 break
 
 
-def refactor_caption(caption, link):
+def refactor_caption(caption):
     links = ""
     save = ""
     while caption.find("<https://") != -1:
@@ -179,7 +180,7 @@ def refactor_caption(caption, link):
     while final[0] in shit:
         final = final[1:]
 
-    return f"{links}\n`{final}`\n\nUse this image as reference:\n{link[8:]}"
+    return f"{links}\n`{final}`"
 
 
 def main():
