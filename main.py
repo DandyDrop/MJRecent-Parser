@@ -93,6 +93,7 @@ def change_main_username(m):
 
 @bot.message_handler(commands=['renew'])
 def get_main(m):
+    results_main.clear()
     response = requests.get("https://www.midjourney.com/showcase/recent/")
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
