@@ -4,7 +4,9 @@ from flask import Flask, request, Response
 from bs4 import BeautifulSoup
 import requests
 import telebot
+import pyshorteners
 
+sh = pyshorteners.Shortener()
 USERNAMES = ["@", "@", os.environ.get("LOGS_USERNAME"), "@"]
 ADMIN_IDS = [652015662]
 PASSWORDS = [os.environ.get("MAIN_REQUEST_PASS"),
@@ -49,10 +51,10 @@ def handle_admin():
             if update.message.from_user.id in ADMIN_IDS:
                 bot.process_new_updates([update])
             return ""
-                
+
         except Exception as e:
             bot.send_message('652015662',
-                         f'{str(e)}')
+                             f'{str(e)}')
             return ""
 
     if request.method == "POST":
@@ -98,23 +100,19 @@ def get_main(m):
     soup = BeautifulSoup(response.text, 'html.parser')
     scripts = soup.find_all("script")
     try:
-      for script in scripts:
-        if script.get('id') != None:
-            data = json.loads(script.text)
-            jobs = data['props']['pageProps']['jobs']
-            for job in jobs:
-                if job['image_paths'][0] not in the_bin:
-                    results_main.append({"link": job['image_paths'][0],
-                                         "prompt": refactor_caption(job['full_command'])
-                                         })
-            break
+        for script in scripts:
+            if script.get('id') != None:
+                data = json.loads(script.text)
+                jobs = data['props']['pageProps']['jobs']
+                for job in jobs:
+                    if job['image_paths'][0] not in the_bin:
+                        results_main.append({"link": sh.tinyurl.short(job['image_paths'][0]),
+                                             "prompt": refactor_caption(job['full_command'], job['image_paths'][0])
+                                             })
+                break
     except Exception as e:
-      bot.send_message(USERNAMES[2],
-                      f"Got the error in get_main:\n{str(e)}\n")
-      bot.send_message(USERNAMES[2],
-                      f"First 2000 symbols of soup:\n{str(soup)[:2000]}")
-      bot.send_message(USERNAMES[2],
-                      f"scripts=:\n{str(scripts)}")
+        bot.send_message(USERNAMES[2],
+                         f"Got the error in get_main:\n{str(e)}\n\nFirst 2000 symbols of soup:\n{str(soup)[:2000]}\n\nscripts=:\n{str(scripts)}")
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
@@ -167,7 +165,7 @@ def send_main(m):
                 break
 
 
-def refactor_caption(caption):
+def refactor_caption(caption, link):
     links = ""
     save = ""
     while caption.find("<https://") != -1:
@@ -181,7 +179,7 @@ def refactor_caption(caption):
     while final[0] in shit:
         final = final[1:]
 
-    return f"{links}\n`{final}`"
+    return f"{links}\n`{final}`\n\nUse this image as reference:\n{link[8:]}"
 
 
 def main():
