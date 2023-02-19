@@ -10,8 +10,7 @@ sh = pyshorteners.Shortener()
 USERNAMES = ["@", "@", os.environ.get("LOGS_USERNAME"), "@"]
 ADMIN_IDS = [652015662]
 PASSWORDS = [os.environ.get("MAIN_REQUEST_PASS"),
-             os.environ.get("SEND_TO_SECOND_PASS")
-             ]
+             os.environ.get("SEND_TO_SECOND_PASS")]
 results_main = []
 the_bin = []
 bot = telebot.TeleBot(os.environ.get("TOKEN"))
@@ -93,6 +92,23 @@ def change_main_username(m):
             break
 
 
+
+@bot.message_handler(commands=['push_to_bin'])
+def pusher_to_bin(m):
+    try:
+        for i in range(m.text[13:]):
+            image = results_main.pop()
+            bot.send_photo(m.chat.id,
+                           photo=image['link'],
+                           caption=image['prompt'],
+                           parse_mode="Markdown")
+            the_bin.append(image)
+            
+    except Exception as e:
+        bot.send_message(m.chat.id, f"Error:\n{str(e)}")
+
+            
+            
 @bot.message_handler(commands=['renew'])
 def get_main(m):
     results_main.clear()
