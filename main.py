@@ -96,8 +96,10 @@ def change_main_username(m):
 @bot.message_handler(commands=['push_to_bin'])
 def pusher_to_bin(m):
     try:
-        for i in range(m.text[13:]):
+        for i in range(int(m.text[13:])):
             image = results_main.pop()
+            bot.send_message(m.chat.id,
+                             text=f"Pushing {i}...")
             bot.send_photo(m.chat.id,
                            photo=image['link'],
                            caption=image['prompt'],
