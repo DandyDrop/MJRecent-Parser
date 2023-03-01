@@ -137,37 +137,20 @@ def send_main(m):
         bot.send_message(USERNAMES[2], "The bot needs to be taken care of ;(")
     elif len(results_main) != 0:
         for i in range(3):
+            image = results_main.pop()
+            if len(the_bin) > 200:
+                del the_bin[0]
+            the_bin.append(image["link"])
             try:
-                image = results_main.pop()
-                if len(the_bin) > 200:
-                    del the_bin[0]
-                the_bin.append(image["link"])
-                bot.send_photo(
-                    chat_id=USERNAMES[0],
-                    photo=image["link"],
-                    caption=image["prompt"],
-                    parse_mode="Markdown"
-                )
-                bot.send_photo(
-                    chat_id=USERNAMES[3],
-                    photo=image["link"],
-                    caption=image["prompt"],
-                    parse_mode="Markdown"
-                )
-                requests.post(os.getenv('LINK_TO_SAVE'),
-                              data={
-                                  PASSWORDS[1]: "asdc23sdn213",
-                                  "link": image["link"],
-                                  "prompt": image["prompt"],
-                                  "user": USERNAMES[1]
-                              }
-                              )
+                send(image)
                 break
-                
+
             except Exception as e:
                 e = str(e)
                 if i == 0:
-                    bot.send_message(USERNAMES[2], f"Error in send_main():\n{e}")
+                    bot.send_message(USERNAMES[2], f"Error in send_main():\n{e}\n"
+                                                   "\ntrying to send(image) one more time...")
+                    send(image)
                 if "Bad Request" not in e:
                     break
 
@@ -178,6 +161,29 @@ def send_main(m):
     else:
         bot.send_message(USERNAMES[2], 'No images, called get_main(m="pass")')
         get_main(m="pass")
+
+
+def send(image):
+    bot.send_photo(
+        chat_id=USERNAMES[0],
+        photo=image["link"],
+        caption=image["prompt"],
+        parse_mode="Markdown"
+    )
+    bot.send_photo(
+        chat_id=USERNAMES[3],
+        photo=image["link"],
+        caption=image["prompt"],
+        parse_mode="Markdown"
+    )
+    requests.post(os.getenv('LINK_TO_SAVE'),
+                  data={
+                      PASSWORDS[1]: "asdc23sdn213",
+                      "link": image["link"],
+                      "prompt": image["prompt"],
+                      "user": USERNAMES[1]
+                  }
+                  )
 
 
 def refactor_caption(caption):
