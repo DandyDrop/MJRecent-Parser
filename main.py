@@ -26,7 +26,7 @@ def handle():
                              f"Detected {request.method} request\nwith {ID} ID."
                              f"\n{len(results_main)} were seen in results_main.\n{len(the_bin)} "
                              f"were seen in bin\nUSERNAMES={USERNAMES}")
-            if request.method == 'POST' and ID != None:
+            if request.method == 'POST' and ID:
                 if ID == "Awake":
                     return ""
                 elif ID == "Send":
@@ -56,7 +56,8 @@ def handle_admin():
             return ""
 
     return ""
-    
+
+
 @bot.message_handler(commands=['show_bin', 'show_main', 'show_pass'])
 def send_all_in_bin(m):
     bot.send_message(USERNAMES[2],
@@ -89,22 +90,21 @@ def change_main_username(m):
 
 @bot.message_handler(commands=['push_to_bin'])
 def pusher_to_bin(m):
-  for i in range(int(m.text[13:])):
-    try:
-        image = results_main.pop()
-        bot.send_message(m.chat.id,
-                         text=f"Pushing {i}...")
-        bot.send_photo(m.chat.id,
-                       photo=image['link'],
-                       caption=image['prompt'],
-                       parse_mode="Markdown")
-        the_bin.append(image)  
-            
-    except Exception as e:
-        bot.send_message(m.chat.id, f"Error:\n{str(e)}")
+    for i in range(int(m.text[13:])):
+        try:
+            image = results_main.pop()
+            bot.send_message(m.chat.id,
+                             text=f"Pushing {i}...")
+            bot.send_photo(m.chat.id,
+                           photo=image['link'],
+                           caption=image['prompt'],
+                           parse_mode="Markdown")
+            the_bin.append(image)
 
-            
-            
+        except Exception as e:
+            bot.send_message(m.chat.id, f"Error:\n{str(e)}")
+
+
 @bot.message_handler(commands=['renew'])
 def get_main(m):
     results_main.clear()
@@ -113,19 +113,21 @@ def get_main(m):
     scripts = soup.find_all("script")
     try:
         for script in scripts:
-            if script.get('id') != None:
+            if script.get('id'):
                 data = json.loads(script.text)
                 jobs = data['props']['pageProps']['jobs']
                 for job in jobs:
                     if job['image_paths'][0] not in the_bin and job['image_paths'][0] not in results_main:
-                        url_sh = sh.tinyurl.short(job['image_paths'][0]) 
+                        url_sh = sh.tinyurl.short(job['image_paths'][0])
                         results_main.append({"link": url_sh,
-                                             "prompt": f"{refactor_caption(job['full_command'])}\n\nUse this image as reference:\n{url_sh[8:]}"
+                                             "prompt": f"{refactor_caption(job['full_command'])}"
+                                                       f"\n\nUse this image as reference:\n{url_sh[8:]}"
                                              })
                 break
     except Exception as e:
         bot.send_message(USERNAMES[2],
-                         f"Got the error in get_main:\n{str(e)}\n\nFirst 2000 symbols of soup:\n{str(soup)[:2000]}\n\nscripts=:\n{str(scripts)}")
+                         f"Got the error in get_main:\n{str(e)}\n\nFirst 2000 symbols of soup:"
+                         f"\n{str(soup)[:2000]}\n\nscripts=:\n{str(scripts)}")
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
@@ -134,12 +136,12 @@ def send_main(m):
     if "@" in USERNAMES:
         bot.send_message(USERNAMES[2], "The bot needs to be taken care of ;(")
     elif len(results_main) != 0:
-        image = results_main.pop()
-        if len(the_bin) > 200:
-            del the_bin[0]
-        the_bin.append(image["link"])
         for i in range(3):
             try:
+                image = results_main.pop()
+                if len(the_bin) > 200:
+                    del the_bin[0]
+                the_bin.append(image["link"])
                 bot.send_photo(
                     chat_id=USERNAMES[0],
                     photo=image["link"],
@@ -161,21 +163,21 @@ def send_main(m):
                               }
                               )
                 break
+                
             except Exception as e:
                 e = str(e)
                 if i == 0:
                     bot.send_message(USERNAMES[2], f"Error in send_main():\n{e}")
                 if "Bad Request" not in e:
                     break
-                
+
         bot.send_message(USERNAMES[2],
                          f"{len(results_main)} left in results_main."
-                         f"\n{the_bin[0][20:]}\n-- first in bin.")
+                         f"\n{the_bin[0][20:]} - first in bin.")
 
     else:
         bot.send_message(USERNAMES[2], 'No images, called get_main(m="pass")')
         get_main(m="pass")
-        
 
 
 def refactor_caption(caption):
