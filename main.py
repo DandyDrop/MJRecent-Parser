@@ -1,19 +1,18 @@
 import os
 import json
-from flask import Flask, request, Response
+from flask import Flask, request
 from bs4 import BeautifulSoup
 import requests
 import telebot
 import pyshorteners
 
 sh = pyshorteners.Shortener()
-USERNAMES = ["@", "@", os.environ.get("LOGS_USERNAME"), "@"]
-ADMIN_IDS = [652015662]
-PASSWORDS = [os.environ.get("MAIN_REQUEST_PASS"),
-             os.environ.get("SEND_TO_SECOND_PASS")]
+USERNAMES = ["@", "@", os.getenv('LOGS_USERNAME'), "@"]
+ADMIN_IDS = [652015662, 5412948297]
+PASSWORDS = [os.getenv('MAIN_REQUEST_PASS'), os.getenv('SEND_TO_SECOND_PASS')]
 results_main = []
 the_bin = []
-bot = telebot.TeleBot(os.environ.get("TOKEN"))
+bot = telebot.TeleBot(os.getenv('TOKEN'))
 app = Flask(__name__)
 username_commands = ['change_main_username', 'change_file_username', 'change_logs_username', 'change_onem_username']
 
@@ -24,9 +23,9 @@ def handle():
         if request.headers.get('content-type') != "application/json":
             ID = request.form.get(PASSWORDS[0])
             bot.send_message(USERNAMES[2],
-                             f"Detected {request.method} request \nwith {ID} ID."
+                             f"Detected {request.method} request\nwith {ID} ID."
                              f"\n{len(results_main)} were seen in results_main.\n{len(the_bin)} "
-                             f"were seen in bin\nUSERNAMES={str(USERNAMES)}")
+                             f"were seen in bin\nUSERNAMES={USERNAMES}")
             if request.method == 'POST' and ID != None:
                 if ID == "Awake":
                     return ""
@@ -35,7 +34,7 @@ def handle():
             else:
                 bot.send_message(USERNAMES[2],
                                  f'Somebody tried with data: \n{str(request.form)}')
-                return Response("No pass - @no_reception", status=403)
+                return "No pass - @no_reception"
 
     except Exception as e:
         e = str(e)
@@ -53,15 +52,11 @@ def handle_admin():
 
         except Exception as e:
             bot.send_message('652015662',
-                             f'{str(e)}')
+                             f'error in handle_admin():\n{str(e)}')
             return ""
 
-    if request.method == "POST":
-        return Response("OK", status=200)
-    else:
-        return ""
-
-
+    return ""
+    
 @bot.message_handler(commands=['show_bin', 'show_main', 'show_pass'])
 def send_all_in_bin(m):
     bot.send_message(USERNAMES[2],
@@ -83,7 +78,7 @@ def send_all_in_bin(m):
 @bot.message_handler(commands=username_commands)
 def change_main_username(m):
     bot.send_message(USERNAMES[2],
-                     f"Detected message with some user changing command\nfrom:\nid={m.chat.id}")
+                     f"Detected message with some username changing command\nfrom:\nid={m.chat.id}")
     for i, com in enumerate(username_commands):
         if com == m.text[1:m.text.index(" ")]:
             bot.send_message(USERNAMES[2], f"Before changing USERNAMES=\n{USERNAMES}")
@@ -92,19 +87,18 @@ def change_main_username(m):
             break
 
 
-
 @bot.message_handler(commands=['push_to_bin'])
 def pusher_to_bin(m):
+  for i in range(int(m.text[13:])):
     try:
-        for i in range(int(m.text[13:])):
-            image = results_main.pop()
-            bot.send_message(m.chat.id,
-                             text=f"Pushing {i}...")
-            bot.send_photo(m.chat.id,
-                           photo=image['link'],
-                           caption=image['prompt'],
-                           parse_mode="Markdown")
-            the_bin.append(image)
+        image = results_main.pop()
+        bot.send_message(m.chat.id,
+                         text=f"Pushing {i}...")
+        bot.send_photo(m.chat.id,
+                       photo=image['link'],
+                       caption=image['prompt'],
+                       parse_mode="Markdown")
+        the_bin.append(image)  
             
     except Exception as e:
         bot.send_message(m.chat.id, f"Error:\n{str(e)}")
@@ -123,7 +117,7 @@ def get_main(m):
                 data = json.loads(script.text)
                 jobs = data['props']['pageProps']['jobs']
                 for job in jobs:
-                    if job['image_paths'][0] not in the_bin:
+                    if job['image_paths'][0] not in the_bin and job['image_paths'][0] not in results_main:
                         url_sh = sh.tinyurl.short(job['image_paths'][0]) 
                         results_main.append({"link": url_sh,
                                              "prompt": f"{refactor_caption(job['full_command'])}\n\nUse this image as reference:\n{url_sh[8:]}"
@@ -137,12 +131,15 @@ def get_main(m):
 
 @bot.message_handler(commands=['send'])
 def send_main(m):
-    for i in range(3):
-        try:
-            if "@" in USERNAMES:
-                bot.send_message(USERNAMES[2], "The bot needs to be taken care of ;(")
-            elif len(results_main) != 0:
-                image = results_main.pop()
+    if "@" in USERNAMES:
+        bot.send_message(USERNAMES[2], "The bot needs to be taken care of ;(")
+    elif len(results_main) != 0:
+        image = results_main.pop()
+        if len(the_bin) > 200:
+            del the_bin[0]
+        the_bin.append(image["link"])
+        for i in range(3):
+            try:
                 bot.send_photo(
                     chat_id=USERNAMES[0],
                     photo=image["link"],
@@ -155,10 +152,7 @@ def send_main(m):
                     caption=image["prompt"],
                     parse_mode="Markdown"
                 )
-                if len(the_bin) > 200:
-                    del the_bin[0]
-                the_bin.append(image["link"])
-                requests.post("https://totest.adaptable.app",
+                requests.post(os.getenv('LINK_TO_SAVE'),
                               data={
                                   PASSWORDS[1]: "asdc23sdn213",
                                   "link": image["link"],
@@ -166,22 +160,22 @@ def send_main(m):
                                   "user": USERNAMES[1]
                               }
                               )
-                bot.send_message(USERNAMES[2],
-                                 f"{len(results_main)} left in results_main.\n{the_bin[0][27:-8]}\n-- first in bin.")
-
-            else:
-                if i == 0:
-                    bot.send_message(USERNAMES[2], 'No images, called get_main(m="pass")')
-                get_main(m="pass")
-                continue
-
-            break
-
-        except Exception as e:
-            e = str(e)
-            bot.send_message(USERNAMES[2], f"error:\n{e}")
-            if "Bad Request" not in e:
                 break
+            except Exception as e:
+                e = str(e)
+                if i == 0:
+                    bot.send_message(USERNAMES[2], f"Error in send_main():\n{e}")
+                if "Bad Request" not in e:
+                    break
+                
+        bot.send_message(USERNAMES[2],
+                         f"{len(results_main)} left in results_main."
+                         f"\n{the_bin[0][20:]}\n-- first in bin.")
+
+    else:
+        bot.send_message(USERNAMES[2], 'No images, called get_main(m="pass")')
+        get_main(m="pass")
+        
 
 
 def refactor_caption(caption):
@@ -202,11 +196,15 @@ def refactor_caption(caption):
 
 
 def main():
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 3000)))
+    app.run(host='0.0.0.0', port=os.getenv("PORT", 3000))
 
 
 if __name__ == '__main__':
     main()
+
+
+
+
 
 
 
