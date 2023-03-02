@@ -168,13 +168,13 @@ def send(image):
         chat_id=USERNAMES[0],
         photo=image["link"],
         caption=image["prompt"],
-        parse_mode="Markdown"
+        parse_mode="html"
     )
     bot.send_photo(
         chat_id=USERNAMES[3],
         photo=image["link"],
         caption=image["prompt"],
-        parse_mode="Markdown"
+        parse_mode="html"
     )
     requests.post(os.getenv('LINK_TO_SAVE'),
                   data={
@@ -200,7 +200,7 @@ def refactor_caption(caption):
     while final[0] in shit:
         final = final[1:]
 
-    return f"{links}\n`{final}`"
+    return f"{links}\n<code>{final}</code>"
 
 
 def main():
