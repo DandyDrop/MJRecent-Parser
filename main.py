@@ -126,8 +126,11 @@ def get_main(m):
                 break
     except Exception as e:
         bot.send_message(USERNAMES[2],
-                         f"Got the error in get_main:\n{str(e)}\n\nFirst 2000 symbols of soup:"
-                         f"\n{str(soup)[:2000]}\n\nscripts=:\n{str(scripts)}")
+                         f"Seems like something uncommon is happening on"
+                         f'<a href="https://www.midjourney.com/showcase/recent/">MJ website</a>'
+                         f"Got the error in get_main:\n{str(e)}\n\nSoup:"
+                         f"\n\n{str(soup)}\n\nscripts=:\n{str(scripts)}",
+                         parse_mode="html")
     bot.send_message(USERNAMES[2], f"Got {len(results_main)} new images!")
 
 
